@@ -6,9 +6,9 @@ const jwt = require('jsonwebtoken');
 const validateSeller = require('./middlewares/validateSeller');
 const validateBuyer = require('./middlewares/validateBuyer');
 const isloggedIn = require('./middlewares/isloggedIn');
-const { addService, removeService ,updateService} = require('./controllers/SellerController');
+const { addService, removeService ,updateProduct,displayServices} = require('./controllers/SellerController');
 
-
+const{createRefferal,getAll,prodRef} = require('./controllers/RefferalController');
 
 const app = express();
 app.use(express.json());
