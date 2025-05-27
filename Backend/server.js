@@ -4,8 +4,11 @@ const User= require('./models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validateSeller = require('./middlewares/validateSeller');
+const validateBuyer = require('./middlewares/validateBuyer');
 const isloggedIn = require('./middlewares/isloggedIn');
-const { addService, removeService , updateService,updateProduct} = require('./controllers/SellerController');
+const { addService, removeService ,updateProduct,displayServices} = require('./controllers/SellerController');
+
+const {createRefferal,getAll,ProdRef} = require('./controllers/RefferalController');
 
 
 
@@ -115,6 +118,11 @@ catch (error) {
 app.post('/login/addService',isloggedIn,validateSeller,addService);
 app.post('/login/updateService/:serviceId',isloggedIn,validateSeller,updateProduct); 
 app.delete('/login/removeService/:serviceId',isloggedIn,validateSeller,removeService);
+app.get('/login/getServices', isloggedIn, validateSeller, displayServices);
+app.post('/login/createRef',isloggedIn,validateBuyer,createRefferal);
+app.get('/login/getReferrals', isloggedIn, validateBuyer, getAll);
+app.get('/login/prodRef/:id', isloggedIn, validateBuyer, ProdRef);
+
 
 
 
