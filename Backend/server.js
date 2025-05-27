@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const validateSeller = require('./middlewares/validateSeller');
 const isloggedIn = require('./middlewares/isloggedIn');
 const { addService } = require('./controllers/SellerController');
-const { updateProduct } = require('./controllers/SellerController');
+const { updateProduct} = require('./controllers/SellerController');
 
 
 
@@ -115,6 +115,7 @@ catch (error) {
  
 app.post('/login/addService',isloggedIn,validateSeller,addService);
 app.post('/login/updateService/:serviceId', isloggedIn, validateSeller, updateProduct);
+
 
 
 
