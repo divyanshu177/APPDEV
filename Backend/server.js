@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validateSeller = require('./middlewares/validateSeller');
 const isloggedIn = require('./middlewares/isloggedIn');
-const { addService, removeService } = require('./controllers/SellerController');
+const { addService, removeService ,updateService} = require('./controllers/SellerController');
 
 
 
@@ -65,7 +65,7 @@ app.post('/login', async (req, res) => {
       const token =   jwt.sign(
             { id: user._id },
             process.env.SECRET,
-            { expiresIn: '1h' },
+            { expiresIn: '24h' },
       )
              
 
@@ -113,7 +113,8 @@ catch (error) {
 });     
  
 app.post('/login/addService',isloggedIn,validateSeller,addService);
-app.delete('/login/removeService/:serviceId', isloggedIn, validateSeller, removeService);
+app.post('/login/updateService/:serviceId',isloggedIn,validateSeller,updateService); 
+app.delete('/login/removeService/:serviceId',isloggedIn,validateSeller,removeService);
 
 
 
