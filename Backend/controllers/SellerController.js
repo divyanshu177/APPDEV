@@ -84,9 +84,8 @@ const updateProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found or unauthorized" });
     }
 
-    
     Object.assign(product, req.body);
-
+    
     await product.save();
     res.status(200).json({ message: "Product updated successfully", product });
 
