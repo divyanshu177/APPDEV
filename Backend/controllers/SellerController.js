@@ -1,92 +1,114 @@
 const Service = require('../models/service');
-const addService =async (req,res)=>{
-    try{
-       const {
-  name,
-  stock,
-  description,
-  category,
-  image,
-  seller,
-  reviews,
-  originalPrice,
-  referralPrice,
-  referrerSharePercent,
-  sellerSharePercent,
-  createdAt
-} = req.body;
-         if(!name || !stock || !description || !category || !image || !seller || !originalPrice || !referralPrice || !referrerSharePercent || !sellerSharePercent) {
-              return res.status(400).json({ message: "All fields are required" });
-         }
-         
-         const newService = new Service({
-              name,
-              stock,
-              description,
-              category,
-              image,
-              seller,
-              reviews,
-              originalPrice,
-              referralPrice,
-              referrerSharePercent,
-              sellerSharePercent
-         });
-         
-         await newService.save();
-         res.status(201).json({ message: "Service added successfully", service: newService });
 
+// Add a new service
+const addService = async (req, res) => {
+  try {
+    const {
+      name,
+      stock,
+      description,
+      category,
+      image,
+      seller,
+      reviews,
+      originalPrice,
+      referralPrice,
+      referrerSharePercent,
+      sellerSharePercent,
+    } = req.body;
 
+    // Validate required fields
+    if (
+      !name || !stock || !description || !category || !image || !seller ||
+      originalPrice === undefined || referralPrice === undefined ||
+      referrerSharePercent === undefined || sellerSharePercent === undefined
+    ) {
+      return res.status(400).json({ message: "All fields are required" });
     }
-    catch(error){
-        console.error("Error adding service:", error);
-        res.status(500).json({ message: "Internal server error", error: error.message });
-    }
+
+    const newService = new Service({
+      name,
+      stock,
+      description,
+      category,
+      image,
+      seller,
+      reviews,
+      originalPrice,
+      referralPrice,
+      referrerSharePercent,
+      sellerSharePercent
+    });
+
+    await newService.save();
+    res.status(201).json({ message: "Service added successfully", service: newService });
+
+  } catch (error) {
+    console.error("Error adding service:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
 };
 
+// Remove a service
 const removeService = async (req, res) => {
-    try{
-        const { serviceId } = req.params;
-        if (!serviceId) {
-            return res.status(400).json({ message: "Service ID is required" });
-        }
+  try {
+    const { serviceId } = req.params;
 
-        const service = await Service.findByIdAndDelete(serviceId);
-        if (!service) {
-            return res.status(404).json({ message: "Service not found" });
-        }
-
-        res.status(200).json({ message: "Service removed successfully", service });
-    }
-        
-
-    catch(error){
-        console.error("Error removing service:", error);    
-        res.status(500).json({ message: "Internal server error", error: error.message });
+    if (!serviceId) {
+      return res.status(400).json({ message: "Service ID is required" });
     }
 
+    const service = await Service.findByIdAndDelete(serviceId);
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
+    }
 
+    res.status(200).json({ message: "Service removed successfully", service });
 
+  } catch (error) {
+    console.error("Error removing service:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
 };
+ 
+const displayServices = async (req, res) => {
+  try {
+    const seller = req.user._id; 
+    const services = await Service.find({ seller });
+
+    if (!services || services.length === 0) {
+      return res.status(404).json({ message: "No services found for this seller" });
+    }
+
+    res.status(200).json({ services }); 
+  } catch (error) {
+    console.error("Error displaying services:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
 
 
 const updateProduct = async (req, res) => {
   try {
-    console.log(req.params)
-    const  productId  = req.params.serviceId;
+    const productId = req.params.serviceId;
     const sellerId = req.user._id; 
-    console.log("Seller ID:", sellerId);
-    console.log("Product ID:", productId);
+    console.log("Updating product with ID:", productId, "by seller:", sellerId);
 
     const product = await Service.findOne({ _id: productId, seller: sellerId });
-
+    
     if (!product) {
       return res.status(404).json({ message: "Product not found or unauthorized" });
     }
 
+<<<<<<< HEAD
     Object.assign(product, req.body);
     
+=======
+    Object.assign(product, req.body); 
+>>>>>>> 3502bf4a105af22f1c83874e253e988a187302b9
     await product.save();
+
     res.status(200).json({ message: "Product updated successfully", product });
 
   } catch (error) {
@@ -94,8 +116,9 @@ const updateProduct = async (req, res) => {
   }
 };
 
-
 module.exports = {
-    addService,
- updateProduct,removeService
+  addService,
+  updateProduct,
+  removeService,
+  displayServices
 };
