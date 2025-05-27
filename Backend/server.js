@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validateSeller = require('./middlewares/validateSeller');
 const isloggedIn = require('./middlewares/isloggedIn');
-const { addService, removeService ,updateService} = require('./controllers/SellerController');
+const { addService, removeService , updateService,updateProduct} = require('./controllers/SellerController');
 
 
 
@@ -113,7 +113,7 @@ catch (error) {
 });     
  
 app.post('/login/addService',isloggedIn,validateSeller,addService);
-app.post('/login/updateService/:serviceId',isloggedIn,validateSeller,updateService); 
+app.post('/login/updateService/:serviceId',isloggedIn,validateSeller,updateProduct); 
 app.delete('/login/removeService/:serviceId',isloggedIn,validateSeller,removeService);
 
 
