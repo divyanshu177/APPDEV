@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const validateSeller = require('./middlewares/validateSeller');
 const isloggedIn = require('./middlewares/isloggedIn');
 const { addService } = require('./controllers/SellerController');
+const { updateProduct } = require('./controllers/SellerController');
 
 
 
@@ -65,7 +66,7 @@ app.post('/login', async (req, res) => {
       const token =   jwt.sign(
             { id: user._id },
             process.env.SECRET,
-            { expiresIn: '1h' },
+            { expiresIn: '24h' },
       )
              
 
@@ -113,6 +114,7 @@ catch (error) {
 });     
  
 app.post('/login/addService',isloggedIn,validateSeller,addService);
+app.post('/login/updateService/:serviceId', isloggedIn, validateSeller, updateProduct);
 
 
 
