@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validateSeller = require('./middlewares/validateSeller');
 const isloggedIn = require('./middlewares/isloggedIn');
+const { addService } = require('./controllers/SellerController');
+
 
 
 const app = express();
@@ -109,6 +111,10 @@ catch (error) {
     res.status(500).json({ message: "Internal server error" });
 }
 });     
+ 
+app.post('/login/addService',isloggedIn,validateSeller,addService);
+
+
 
 
 app.listen(3000, () => {
