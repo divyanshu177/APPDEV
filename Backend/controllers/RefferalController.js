@@ -18,6 +18,7 @@ const createRefferal =async(req,res)=>{
     }
 
 }
+
 module.exports = {
     createRefferal
 };
