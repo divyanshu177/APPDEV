@@ -1,14 +1,14 @@
 const express = require('express');
 const connectDb = require('./config/db');
 const User= require('./models/User');
-const bcrypt = require('bcrypt');
+ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const validateSeller = require('./middlewares/validateSeller');
 const validateBuyer = require('./middlewares/validateBuyer');
 const isloggedIn = require('./middlewares/isloggedIn');
 const { addService, removeService ,updateProduct,displayServices} = require('./controllers/SellerController');
 
-const{createRefferal,getAll,prodRef} = require('./controllers/RefferalController');
+const{createRefferal,getAll,prodRef,getAll,ProdRef} = require('./controllers/RefferalController');
 
 const app = express();
 app.use(express.json());
@@ -118,6 +118,8 @@ app.post('/login/updateService/:serviceId',isloggedIn,validateSeller,updateProdu
 app.delete('/login/removeService/:serviceId',isloggedIn,validateSeller,removeService);
 app.get('/login/getServices', isloggedIn, validateSeller, displayServices);
 app.post('/login/createRef',isloggedIn,validateBuyer,createRefferal);
+app.get('/login/getReferrals', isloggedIn, validateBuyer, getAll);
+app.get('/login/prodRef/:id', isloggedIn, validateBuyer, ProdRef);
 
 
 

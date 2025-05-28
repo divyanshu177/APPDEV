@@ -19,6 +19,29 @@ const createRefferal =async(req,res)=>{
 
 }
 
+const getAll=async(req,res)=>{
+    try{
+        const referrals = await Referral.find({referredBy:req.user._id}).populate('product').populate('referredTo');
+        res.status(200).json(referrals);
+    }
+    catch (error) {
+        console.error("Error fetching referrals:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+ const ProdRef =async (req,res)=>{
+    try{
+    const referrals = await Referral.find({product:req.params.id}).populate('referredTo').populate('referredBy');
+    res.status(200).json(referrals);
+    }
+    catch (error) {
+        console.error("Error fetching product referrals:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
 module.exports = {
-    createRefferal
+    createRefferal,
+    getAll,
+    ProdRef
 };
