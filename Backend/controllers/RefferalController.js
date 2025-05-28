@@ -1,4 +1,4 @@
-const Referral = require('../models/referralSchema'); // Adjust the path as necessary
+const Referral = require('../models/referralSchema'); 
 const createRefferal =async(req,res)=>{
     try{
        
