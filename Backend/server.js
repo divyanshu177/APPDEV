@@ -9,6 +9,7 @@ const isloggedIn = require('./middlewares/isloggedIn');
 const { addService, removeService ,updateProduct,displayServices} = require('./controllers/SellerController');
 
 const {createRefferal,getAll,ProdRef} = require('./controllers/RefferalController');
+const { addFriend } = require('./controllers/UserController');
 
 
 
@@ -122,6 +123,7 @@ app.get('/login/getServices', isloggedIn, validateSeller, displayServices);
 app.post('/login/createRef',isloggedIn,validateBuyer,createRefferal);
 app.get('/login/getReferrals', isloggedIn, validateBuyer, getAll);
 app.get('/login/prodRef/:id', isloggedIn, validateBuyer, ProdRef);
+app.post('/login/addFriend', isloggedIn, validateBuyer, addFriend);
 
 
 
