@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const productSchema = new mongoose.Schema({
+const serviceSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
@@ -27,40 +27,23 @@ const productSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  reviews: [{
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      
-    },
-    rating: {
-      type: Number,
-     
-      min: 1,
-      max: 5
-    },
-    comment: {
-      type: String,
-    
-    }
-  }],
  originalPrice: {
     type: Number,
     required: true,
   },
 
-  referralPrice: {
+  reducedPrice: {
     type: Number,
     required: true,
     validate: {
       validator: function(value) {
         return value < this.originalPrice;
       },
-      message: "Referral price must be less than original price"
+      message: "Reduced price must be less than original price"
     }
   },
 
-  referrerSharePercent: {
+  dummysellerSharePercent: {
     type: Number,
     default: 10, 
     min: 0,
@@ -73,16 +56,17 @@ const productSchema = new mongoose.Schema({
     min: 0,
     max: 100
   },
-   RefferedBy:{
+   dummyseller:{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
    },
+   
   createdAt: {
     type: Date,
     default: Date.now,
   }
 });
 
-const Product = mongoose.model('Product', productSchema);
+const service = mongoose.model('Service', serviceSchema);
 
-module.exports = Product;
+module.exports = service;
