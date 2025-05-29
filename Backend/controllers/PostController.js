@@ -86,6 +86,54 @@ const updatePost = async (req, res) =>{
         return res.status(500).json({ message: "Internal server error" });
     }
 }
+const removePost = async (req, res) => {
+    try{
+        const postId = req.params.id;
+        const post = await Post.findByIdAndDelete(postId);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+        return res.status(200).json({ message: "Post removed successfully", post });
+    }
+    catch (error) { 
+        console.error("Error removing post:", error);       
+        return res.status(500).json({ message: "Internal server error" });    
+    }           
+    }
+
+    const getPost = async (req, res) => {
+        try{
+            const postId = req.params;
+            console.log("Post ID:", req.params);
+            const post = await Post.findById(postId.postId).populate('serviceId').populate('sellerId').populate('dummysellerId');
+            console.log("Post:", post);
+            if (!post) {
+                return res.status(404).json({ message: "Post not found" });
+            }
+            return res.status(200).json({ post });
+
+        }
+        catch (error) {
+            console.error("Error getting post:", error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+    }
+
+    const getMyPosts = async(req,res)=>{
+        try{
+            const userId = req.user._id;
+            console.log("User ID:", userId);
+            const posts = await Post.find({ dummysellerId: userId })
+                .populate('serviceId')
+                .populate('sellerId')
+                .populate('dummysellerId');
+            return res.status(200).json({ posts });
+        }
+        catch (error) {
+            console.error("Error getting my posts:", error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+    };
 const displayPost = async (req, res) => {
     try {
         const posts = await Post.find()
@@ -106,6 +154,9 @@ const displayPost = async (req, res) => {
 module.exports = {
     createPost,
     updatePost,
+    removePost,
+    getPost,
+    getMyPosts,
     displayPost
 
 };

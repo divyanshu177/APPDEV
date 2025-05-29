@@ -9,7 +9,7 @@ const { sendFriendRequest ,acceptFriendRequest,rejectFriendRequest,getFriendRequ
 const {createPost} = require('./controllers/PostController');
 //const { SearchProduct, searchUser  } = require('./controllers/UserController');
 
-const {updatePost,deletePost,displayPost} = require('./controllers/PostController');
+const {updatePost,removePost,displayPost,getPost,getMyPosts} = require('./controllers/PostController');
 //const {displayPost} = require('./controllers/PostController');
 
 const app = express();
@@ -38,8 +38,11 @@ app.get('/login/getFriendRequests', isloggedIn,  getFriendRequests);
 app.post('/login/createPost', isloggedIn, createPost);
 app.put('/login/updatePost/:postId', isloggedIn, updatePost);
 app.get('/login/displayPost', isloggedIn, displayPost);
+app.delete('/login/removePost/:postId', isloggedIn, removePost);
+// Uncomment the following lines if you have these controllers implemented      
+app.get('/login/getPost/:postId', isloggedIn, getPost);
+app.get('/login/getMyPosts', isloggedIn, getMyPosts);
 
-//app.get('/login/searchProduct',isloggedIn,  SearchProduct);
 //app.get('/login/searchUser', isloggedIn,  searchUser);
 
 app.listen(3000, () => {
