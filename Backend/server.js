@@ -7,9 +7,10 @@ const { addService, removeService ,updateService,displayServices} = require('./c
 //const {createRefferal,getAll,ProdRef} = require('./controllers/RefferalController');
 const { sendFriendRequest ,acceptFriendRequest,rejectFriendRequest,getFriendRequests} = require('./controllers/friendController');
 const {createPost} = require('./controllers/PostController');
-//const { SearchProduct, searchUser  } = require('./controllers/UserController');
+const { SearchService, searchUser  } = require('./controllers/UserController');
 
 const {updatePost,removePost,displayPost,getPost,getMyPosts} = require('./controllers/PostController');
+
 //const {displayPost} = require('./controllers/PostController');
 
 const app = express();
@@ -42,6 +43,8 @@ app.delete('/login/removePost/:postId', isloggedIn, removePost);
 // Uncomment the following lines if you have these controllers implemented      
 app.get('/login/getPost/:postId', isloggedIn, getPost);
 app.get('/login/getMyPosts', isloggedIn, getMyPosts);
+app.get('/login/searchUser', isloggedIn, searchUser);
+app.get('/login/SearchService', isloggedIn,  SearchService); 
 
 //app.get('/login/searchUser', isloggedIn,  searchUser);
 

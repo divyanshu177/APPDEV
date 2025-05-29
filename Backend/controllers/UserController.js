@@ -1,30 +1,32 @@
 const User = require('../models/User');
 const Service = require('../models/service');
 
-const SearchProduct = async(req,res)=>{
+const SearchService = async(req,res)=>{
     try{
-        const {productName} = req.body;
-        const product = await Service.find({
-  name: { $regex: productName, $options: 'i' }
+        const {ServiceName} = req.body;
+        console.log("ServiceName:", ServiceName);   
+        const service = await Service.find({
+  name: { $regex: ServiceName, $options: 'i' }
 });
 
-        if(!product || product.length === 0){
-            return res.status(404).json({message: "Product not found"});
+        if(!service || service.length === 0){
+            return res.status(404).json({message: "Service not found"});
         }
-     return   res.status(200).json({message: "Product found", product});
+     return   res.status(200).json({message: "Service found", service});
 
     }
     catch(e){
-        console.error("Error searching product:", e);
+        console.error("Error searching Service:", e);
        return res.status(500).json({message: "Internal server error"});
     }
 
 }
 const searchUser = async(req, res) =>{
     try{
-        username= req.body.username;
+        username= req.body.name;
+        console.log("Searching for user with username:", username);
         const user = await User.find({
-            username: { $regex: username, $options: 'i' }
+            name: { $regex: username, $options: 'i' }
         });
         if(!user || user.length === 0){
             return res.status(404).json({message: "User not found"});
@@ -38,6 +40,6 @@ const searchUser = async(req, res) =>{
 }
 module.exports = {
 
-    SearchProduct,
+    SearchService,
     searchUser
 };
