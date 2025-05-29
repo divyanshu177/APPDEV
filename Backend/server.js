@@ -1,19 +1,7 @@
 const express = require('express');
 const connectDb = require('./config/db');
-<<<<<<< HEAD
-const User= require('./models/User');
- const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const validateSeller = require('./middlewares/validateSeller');
-const validateBuyer = require('./middlewares/validateBuyer');
-=======
->>>>>>> a576509b37b7331b37b4684d83247ac2acc670a9
 const isloggedIn = require('./middlewares/isloggedIn');
 
-<<<<<<< HEAD
-const{createRefferal,getAll,prodRef,getAll,ProdRef} = require('./controllers/RefferalController');
-const { addFriend } = require('./controllers/UserController');
-=======
 const { register, login,logout} = require('./controllers/authController');
 const { addService, removeService ,updateService,displayServices} = require('./controllers/SellerController');
 //const {createRefferal,getAll,ProdRef} = require('./controllers/RefferalController');
@@ -21,7 +9,8 @@ const { sendFriendRequest ,acceptFriendRequest,rejectFriendRequest,getFriendRequ
 const {createPost} = require('./controllers/PostController');
 //const { SearchProduct, searchUser  } = require('./controllers/UserController');
 
->>>>>>> a576509b37b7331b37b4684d83247ac2acc670a9
+const {updatePost,deletePost,displayPost} = require('./controllers/PostController');
+//const {displayPost} = require('./controllers/PostController');
 
 const app = express();
 app.use(express.json());
@@ -42,13 +31,13 @@ app.get('/login/getServices', isloggedIn,  displayServices);
 //app.get('/login/getReferrals', isloggedIn, getAll);
 //app.get('/login/prodRef/:id', isloggedIn,  ProdRef);
 
-<<<<<<< HEAD
-=======
 app.post('/login/sendFriendRequest', isloggedIn, sendFriendRequest);
 app.post('/login/acceptFriendRequest', isloggedIn, acceptFriendRequest);
 app.post('/login/rejectFriendRequest', isloggedIn, rejectFriendRequest);
 app.get('/login/getFriendRequests', isloggedIn,  getFriendRequests);
 app.post('/login/createPost', isloggedIn, createPost);
+app.put('/login/updatePost/:postId', isloggedIn, updatePost);
+app.get('/login/displayPost', isloggedIn, displayPost);
 
 //app.get('/login/searchProduct',isloggedIn,  SearchProduct);
 //app.get('/login/searchUser', isloggedIn,  searchUser);
@@ -56,4 +45,3 @@ app.post('/login/createPost', isloggedIn, createPost);
 app.listen(3000, () => {
     console.log("Server is running on port 3000");
 });
->>>>>>> a576509b37b7331b37b4684d83247ac2acc670a9
