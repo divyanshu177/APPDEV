@@ -10,34 +10,32 @@ const addService = async (req, res) => {
       category,
       image,
       seller,
-      reviews,
       originalPrice,
-      referralPrice,
-      referrerSharePercent,
-      sellerSharePercent,
+      reducedPrice,
+      dummyseller,
+      dummysellerSharePercent,
+      sellerSharePercent
     } = req.body;
 
     // Validate required fields
-    if (
-      !name || !stock || !description || !category || !image || !seller ||
-      originalPrice === undefined || referralPrice === undefined ||
-      referrerSharePercent === undefined || sellerSharePercent === undefined
-    ) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    const newService = new Service({
+if (!name || !stock || !description || !category || !image || !seller || !originalPrice || !reducedPrice) {
+      return res.status(400).json({ message: "All fields are required" });   
+      }
+      
+      
+    const newService = new Service({    
       name,
       stock,
       description,
       category,
       image,
       seller,
-      reviews,
+      dummyseller,
       originalPrice,
-      referralPrice,
-      referrerSharePercent,
-      sellerSharePercent
+      reducedPrice,
+      sellerSharePercent,
+      dummysellerSharePercent
+      
     });
 
     await newService.save();
@@ -49,7 +47,7 @@ const addService = async (req, res) => {
   }
 };
 
-// Remove a service
+
 const removeService = async (req, res) => {
   try {
     const { serviceId } = req.params;
@@ -89,31 +87,32 @@ const displayServices = async (req, res) => {
 
 
 
-const updateProduct = async (req, res) => {
+const updateService = async (req, res) => {
   try {
-    const productId = req.params.serviceId;
+    const serviceId = req.params.serviceId;
     const sellerId = req.user._id; 
-    console.log("Updating product with ID:", productId, "by seller:", sellerId);
+    console.log("Updating service with ID:",serviceId, "by seller:", sellerId);
 
-    const product = await Service.findOne({ _id: productId, seller: sellerId });
+    const service = await Service.findOne({ _id: serviceId, seller: sellerId });
     
-    if (!product) {
-      return res.status(404).json({ message: "Product not found or unauthorized" });
+    if (!service) {
+      return res.status(404).json({ message: "Service not found or unauthorized" });
     }
 
-    Object.assign(product, req.body); 
-    await product.save();
+    Object.assign(service, req.body); 
+    await service.save();
 
-    res.status(200).json({ message: "Product updated successfully", product });
+    res.status(200).json({ message: "Service updated successfully", service:serviceId
+     });
 
   } catch (error) {
-    res.status(500).json({ message: "Error updating product", error: error.message });
+    res.status(500).json({ message: "Error updating service", error: error.message });
   }
 };
 
 module.exports = {
   addService,
-  updateProduct,
+  updateService,
   removeService,
   displayServices
 };

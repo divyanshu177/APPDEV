@@ -21,20 +21,32 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
 
-  role: {
+  phone: {
     type: String,
-    enum: ['buyer', 'seller'],
     required: true,
+    unique: true,
+  },
+
+  profilePicture: {
+    type: String,
+    default: 'default-profile.png',
   },
 
   walletBalance: {
     type: Number,
     default: 0,
   },
-  products: [{
+
+  services: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
+    ref: 'Service',
   }],
+
+  friendsRequests: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  }],
+
   friends:[{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

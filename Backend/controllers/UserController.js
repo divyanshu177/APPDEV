@@ -1,34 +1,45 @@
 const User = require('../models/User');
-const addFriend = async(req,res)=>{
-    try{
-        const {friendId} = req.body;
-        if(!friendId){
-            return res.status(400).json({message: "Friend ID is required"});
-        }
-        const user = await User.findById(req.user._id);
-        if(!user){
-            return res.status(404).json({message: "User not found"});
-        }
-        if(user.friends.includes(friendId)){
-            return res.status(400).json({message: "Already friends"});
-        }
-        user.friends.push(friendId);
-        await user.save();
-        const friend = await User.findById(friendId);
-        if(!friend){
-            return res.status(404).json({message: "Friend not found"});
-        }
-        const friendName = friend.name || "Unknown";
+const Service = require('../models/service');
 
-        res.status(200).json({message: "Friend added successfully", friends: user.friends, friendName: friendName});
+const SearchService = async(req,res)=>{
+    try{
+        const {ServiceName} = req.body;
+        console.log("ServiceName:", ServiceName);   
+        const service = await Service.find({
+  name: { $regex: ServiceName, $options: 'i' }
+});
+
+        if(!service || service.length === 0){
+            return res.status(404).json({message: "Service not found"});
+        }
+     return   res.status(200).json({message: "Service found", service});
 
     }
     catch(e){
-        console.error("Error adding friend:", e);
-        res.status(500).json({message: "Internal server error"});
+        console.error("Error searching Service:", e);
+       return res.status(500).json({message: "Internal server error"});
+    }
 
+}
+const searchUser = async(req, res) =>{
+    try{
+        username= req.body.name;
+        console.log("Searching for user with username:", username);
+        const user = await User.find({
+            name: { $regex: username, $options: 'i' }
+        });
+        if(!user || user.length === 0){
+            return res.status(404).json({message: "User not found"});
+        }
+        return res.status(200).json({message: "User found", user});
+    }
+    catch(e){
+        console.error("Error searching user:", e);
+       return res.status(500).json({message: "Internal server error"});
     }
 }
 module.exports = {
-    addFriend
+
+    SearchService,
+    searchUser
 };
