@@ -1,7 +1,8 @@
 const User = require('../models/User');
 const Post = require('../models/post');
 const Service = require('../models/service');
-const mongoose = require('mongoose');
+
+
 
 
 const createPost = async (req, res) => {

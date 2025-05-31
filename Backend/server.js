@@ -1,53 +1,74 @@
 const express = require('express');
 const connectDb = require('./config/db');
-const isloggedIn = require('./middlewares/isloggedIn');
+const isLoggedIn = require('./middlewares/isLoggedIn');
+const isAuthorized = require('./middlewares/isAuthorized');
 
-const { register, login,logout} = require('./controllers/authController');
-const { addService, removeService ,updateService,displayServices} = require('./controllers/SellerController');
-//const {createRefferal,getAll,ProdRef} = require('./controllers/RefferalController');
-const { sendFriendRequest ,acceptFriendRequest,rejectFriendRequest,getFriendRequests} = require('./controllers/friendController');
-const {createPost} = require('./controllers/PostController');
-const { SearchService, searchUser  } = require('./controllers/UserController');
+const {
+  register, login, logout
+} = require('./controllers/authController');
 
-const {updatePost,removePost,displayPost,getPost,getMyPosts} = require('./controllers/PostController');
+const {
+  addService, removeService, updateService, displayServices
+} = require('./controllers/SellerController');
 
-//const {displayPost} = require('./controllers/PostController');
+const {
+  sendFriendRequest, acceptFriendRequest, rejectFriendRequest, getFriendRequests
+} = require('./controllers/friendController');
+
+const {
+  createPost, updatePost, removePost, displayPost, getPost, getMyPosts
+} = require('./controllers/PostController');
+
+const {
+  searchUser, searchPost, getProfile
+} = require('./controllers/UserController');
+
+const {sendMessage,getMessages} = require('./controllers/chatController');
 
 const app = express();
 app.use(express.json());
 
+// Connect to DB
 connectDb().then(() => {
-    console.log("Database connected successfully");
+  console.log("Database connected successfully");
 });
 
+// Chat routes
+app.post('/login/sendMessage', isLoggedIn, sendMessage);
+app.get('/login/getMessages', isLoggedIn, getMessages);
 
-app.post('/register',register);
-app.post('/login',login);
-app.get('/logout', isloggedIn, logout);
-app.post('/login/addService',isloggedIn,addService);
-app.post('/login/updateService/:serviceId',isloggedIn,updateService); 
-app.delete('/login/removeService/:serviceId',isloggedIn,removeService);
-app.get('/login/getServices', isloggedIn,  displayServices);
-//app.post('/login/createRef',isloggedIn,createRefferal);
-//app.get('/login/getReferrals', isloggedIn, getAll);
-//app.get('/login/prodRef/:id', isloggedIn,  ProdRef);
+// Auth routes
+app.post('/register', register);
+app.post('/login', isAuthorized, login);
+app.post('/logout', isLoggedIn, logout);
 
-app.post('/login/sendFriendRequest', isloggedIn, sendFriendRequest);
-app.post('/login/acceptFriendRequest', isloggedIn, acceptFriendRequest);
-app.post('/login/rejectFriendRequest', isloggedIn, rejectFriendRequest);
-app.get('/login/getFriendRequests', isloggedIn,  getFriendRequests);
-app.post('/login/createPost', isloggedIn, createPost);
-app.put('/login/updatePost/:postId', isloggedIn, updatePost);
-app.get('/login/displayPost', isloggedIn, displayPost);
-app.delete('/login/removePost/:postId', isloggedIn, removePost);
-// Uncomment the following lines if you have these controllers implemented      
-app.get('/login/getPost/:postId', isloggedIn, getPost);
-app.get('/login/getMyPosts', isloggedIn, getMyPosts);
-app.get('/login/searchUser', isloggedIn, searchUser);
-app.get('/login/SearchService', isloggedIn,  SearchService); 
+// Service routes
+app.post('/login/addService', isLoggedIn, addService);
+app.post('/login/updateService/:serviceId', isLoggedIn, updateService); 
+app.delete('/login/removeService/:serviceId', isLoggedIn, removeService);
+app.get('/login/getServices', isLoggedIn, displayServices);
 
-//app.get('/login/searchUser', isloggedIn,  searchUser);
+// Friend routes
+app.post('/login/sendFriendRequest', isLoggedIn, sendFriendRequest);
+app.post('/login/acceptFriendRequest', isLoggedIn, acceptFriendRequest);
+app.post('/login/rejectFriendRequest', isLoggedIn, rejectFriendRequest);
+app.get('/login/getFriendRequests', isLoggedIn, getFriendRequests);
 
+// Post routes
+app.post('/login/createPost', isLoggedIn, createPost);
+app.put('/login/updatePost/:postId', isLoggedIn, updatePost);
+app.get('/login/displayPost', isLoggedIn, displayPost);
+app.delete('/login/removePost/:postId', isLoggedIn, removePost);
+app.get('/login/getPost/:postId', isLoggedIn, getPost);
+app.get('/login/getMyPosts', isLoggedIn, getMyPosts);
+
+// User routes
+app.get('/login/searchUser', isLoggedIn, searchUser);
+app.get('/login/searchPost', isLoggedIn, searchPost); 
+app.get('/login/getProfile', isLoggedIn, getProfile);
+
+
+// Start server (single call)
 app.listen(3000, () => {
-    console.log("Server is running on port 3000");
+  console.log("Server is running on port 3000");
 });
