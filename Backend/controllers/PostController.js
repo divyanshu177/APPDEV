@@ -143,7 +143,7 @@ const displayPost = async (req, res) => {
             .populate('dummysellerId');
 
         return res.status(200).json({ 
-            message: "Posts retrieved successfully", 
+           
             posts 
         });
     } catch (error) {

@@ -2,6 +2,7 @@ const express = require('express');
 const connectDb = require('./config/db');
 const isLoggedIn = require('./middlewares/isLoggedIn');
 const isAuthorized = require('./middlewares/isAuthorized');
+const cors = require('cors');
 
 const {
   register, login, logout
@@ -27,6 +28,9 @@ const {sendMessage,getMessages} = require('./controllers/chatController');
 
 const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+
 
 // Connect to DB
 connectDb().then(() => {
