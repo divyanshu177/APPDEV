@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const service = require('./service');
 
 const postSchema = new mongoose.Schema({
     serviceId:{
@@ -6,6 +7,10 @@ const postSchema = new mongoose.Schema({
         ref: 'Service',
         required: true
     },
+    serviceName: {
+        type: String, 
+        required: true
+    },  
     sellerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

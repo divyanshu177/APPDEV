@@ -1,7 +1,8 @@
 const User = require('../models/User');
 const Post = require('../models/post');
 const Service = require('../models/service');
-const mongoose = require('mongoose');
+
+
 
 
 const createPost = async (req, res) => {
@@ -142,7 +143,7 @@ const displayPost = async (req, res) => {
             .populate('dummysellerId');
 
         return res.status(200).json({ 
-            message: "Posts retrieved successfully", 
+           
             posts 
         });
     } catch (error) {
