@@ -37,7 +37,7 @@ export default function App() {
       >
         <Tab.Screen name="Welcome" component={HomeScreen} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
-        {/* <Tab.Screen name="Login" component={Login} /> */}
+       
         <Tab.Screen name="HomePage" component={HomePage} />
       </Tab.Navigator>
     </NavigationContainer>
