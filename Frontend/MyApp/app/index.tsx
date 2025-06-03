@@ -22,7 +22,7 @@ export default function HomeScreen() {
   useEffect(() => {
     const timer = setTimeout(() => {
       router.replace('/(auth)/login');
-    }, 5000);
+    }, 3000);
 
     return () => clearTimeout(timer); // clean up
   }, []);
