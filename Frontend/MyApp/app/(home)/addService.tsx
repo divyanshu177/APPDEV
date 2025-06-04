@@ -1,114 +1,3 @@
-// // import { View, Text } from 'react-native';
-
-// // export default function AddService() {
-// //   return (
-// //     <View style={{ flex:1, justifyContent: 'center', alignItems: 'center' }}>
-// //       <Text>Add Service Tab</Text>
-// //     </View>
-// //   );
-// // }
-
-// import React, { useState } from 'react';
-// import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-
-// export default function AddServiceScreen() {
-
-// interface FormData {
-//     name: string;
-//     stock: string;
-//     description: string;
-//     category: string;
-//     image: string;
-//     seller: string;
-//     originalPrice: string;
-//     reducedPrice: string;
-//     dummyseller: string;
-//     dummysellerSharePercent: string;
-//     sellerSharePercent: string;
-// }
-
-// const [formData, setFormData] = useState<FormData>({
-//     name: '',
-//     stock: '',
-//     description: '',
-//     category: '',
-//     image: '',
-//     seller: '',
-//     originalPrice: '',
-//     reducedPrice: '',
-//     dummyseller: '',
-//     dummysellerSharePercent: '',
-//     sellerSharePercent: '',
-// });
-
-// const handleChange = (key: keyof FormData, value: string) => {
-//     setFormData({ ...formData, [key]: value });
-// };
-
-//   const handleSubmit = () => {
-//     // Replace this with Axios POST later
-//     Alert.alert('Service Added!', JSON.stringify(formData, null, 2));
-    
-//   };
-
-//   return (
-//     <ScrollView style={styles.container}>
-//       <Text style={styles.title}>Add New Service</Text>
-
-//       {Object.keys(formData).map((key, index) => (
-//         <TextInput
-//           key={index}
-//           style={styles.input}
-//           placeholder={key}
-//           placeholderTextColor="#2F2F2F"
-//           value={formData[key as keyof FormData]}
-//           onChangeText={(text) => handleChange(key as keyof FormData, text)}
-//         />
-//       ))}
-
-//       <TouchableOpacity onPress={handleSubmit} style={styles.button}>
-//         <Text style={styles.buttonText}>Add Service</Text>
-//       </TouchableOpacity>
-//     </ScrollView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#EEDEF6',
-//     padding: 16,
-//   },
-//   title: {
-//     fontSize: 28,
-//     fontWeight: '700',
-//     color: '#2F2F2F',
-//     textAlign: 'center',
-//     marginBottom: 20,
-//   },
-//   input: {
-//     borderWidth: 1,
-//     borderColor: '#CCE5E3',
-//     backgroundColor: '#FEE1B6',
-//     padding: 12,
-//     borderRadius: 10,
-//     marginBottom: 14,
-//     color: '#2F2F2F',
-//   },
-//   button: {
-//     backgroundColor: '#2F2F2F',
-//     paddingVertical: 14,
-//     borderRadius: 10,
-//     alignItems: 'center',
-//     marginTop: 10,
-//   },
-//   buttonText: {
-//     color: '#FEE1B6',
-//     fontWeight: 'bold',
-//     fontSize: 16,
-//   },
-// });
-
 import React, { useState } from 'react';
 import {
   View,
@@ -120,41 +9,90 @@ import {
   Alert,
 } from 'react-native';
 
-export default function AddServiceScreen() {
-  interface FormData {
-    name: string;
-    stock: string;
-    description: string;
-    category: string;
-    image: string;
-    seller: string;
-    originalPrice: string;
-    reducedPrice: string;
-    dummyseller: string;
-    dummysellerSharePercent: string;
-    sellerSharePercent: string;
-  }
+import axiosInstance from '../../app/axiosInstance';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+interface FormData {
+  name: string;
+  stock: number;
+  description: string;
+  category: string;
+  image: string;
+  originalPrice: number;
+  reducedPrice: number;
+  dummysellerSharePercent: number;
+  sellerSharePercent: number;
+}
+
+export default function AddServiceScreen() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
-    stock: '',
+    stock: 0,
     description: '',
     category: '',
     image: '',
-    seller: '',
-    originalPrice: '',
-    reducedPrice: '',
-    dummyseller: '',
-    dummysellerSharePercent: '',
-    sellerSharePercent: '',
+    originalPrice: 0,
+    reducedPrice: 0,
+    dummysellerSharePercent: 10,
+    sellerSharePercent: 90,
   });
 
   const handleChange = (key: keyof FormData, value: string) => {
-    setFormData({ ...formData, [key]: value });
+    const numberFields: (keyof FormData)[] = [
+      'stock',
+      'originalPrice',
+      'reducedPrice',
+      'dummysellerSharePercent',
+      'sellerSharePercent',
+    ];
+
+    setFormData((prev) => ({
+      ...prev,
+      [key]: numberFields.includes(key) ? Number(value) : value,
+    }));
   };
 
-  const handleSubmit = () => {
-    Alert.alert('Service Added!', JSON.stringify(formData, null, 2));
+  const handleSubmit = async () => {
+    try {
+      console.log('Reached handleSubmit');
+      
+      const userString = await AsyncStorage.getItem('user');
+      console.log('User String:', userString);
+    const user = userString ? JSON.parse(userString) : null;
+
+    if (!user || !user.id) {
+      Alert.alert('Error', 'User info not found. Please log in again.');
+      return;
+    }
+
+    const sellerId = user.id;
+      console.log('Seller ID:', sellerId);
+
+      const payload = { ...formData, seller: sellerId };
+      console.log('Payload:', payload);
+      
+   const token = await AsyncStorage.getItem('userToken');
+
+if (token) {
+  console.log('Retrieved token:', token);
+} else {
+  console.log('No token found');
+}
+     
+      
+
+const response = await axiosInstance.post('/login/addService', payload)
+ 
+    
+
+
+      Alert.alert('Service Added Successfully!');
+      console.log('Response:', response.data);
+    } catch (error: any) {
+      console.error('Axios Error:', error.response?.data || error.message);
+      Alert.alert('Error', 'Failed to add service. Please try again.');
+    }
   };
 
   return (
@@ -167,7 +105,12 @@ export default function AddServiceScreen() {
           style={styles.input}
           placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
           placeholderTextColor="#66788a"
-          value={formData[key as keyof FormData]}
+          keyboardType={
+            ['stock', 'originalPrice', 'reducedPrice', 'dummysellerSharePercent', 'sellerSharePercent'].includes(key)
+              ? 'numeric'
+              : 'default'
+          }
+          value={String(formData[key as keyof FormData])}
           onChangeText={(text) => handleChange(key as keyof FormData, text)}
         />
       ))}
@@ -178,6 +121,7 @@ export default function AddServiceScreen() {
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -220,4 +164,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-

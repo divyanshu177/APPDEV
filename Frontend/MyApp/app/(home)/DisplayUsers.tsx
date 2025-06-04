@@ -10,33 +10,36 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
-import axiosInstance from '../../app/axiosInstance'; // Adjust the path as needed
+import axiosInstance from '../../app/axiosInstance';
 
 export default function DisplayUsersScreen() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const handleAddFriend = async (user: { _id: any; name: any; }) => {
-    try {
-      const response = await axiosInstance.post('/login/sendFriendRequest', {
-        receiverId: user._id,
-      });
+ const handleAddFriend = async (user: { _id: any; name: any; }) => {
+  try {
+    const response = await axiosInstance.post('/login/sendFriendRequest', {
+      receiverId: user._id,
 
-      console.log('Friend request response:', response.data);
-      alert(`Friend request sent to ${user.name}`);
-    } catch (error) {
-      console.error('Error sending friend request:', error);
-      if (error.response?.data?.message) {
-        alert(error.response.data.message);
-      } else {
-        alert('Something went wrong. Try again.');
-      }
+    });
+
+    console.log('Friend request response:', response.data);
+    alert(`Friend request sent to ${user.name}`);
+  } catch (error) {
+    console.error('Error sending friend request:', error);
+    if (error.response?.data?.message) {
+      alert(error.response.data.message);
+    } else {
+      alert('Something went wrong. Try again.');
     }
-  };
+  }
+};
+
 
   const fetchUsers = async () => {
     try {
       const response = await axiosInstance.get('/login/getAllUsers');
+      
       console.log('Fetched users:', response.data);
       setUsers(response.data.users || []);
     } catch (error) {

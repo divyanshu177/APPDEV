@@ -44,6 +44,7 @@ const HomePage = () => {
       fetchAllPosts();
       return;
     }
+    
     setLoading(true);
     try {
       const response = await axiosInstance.get('/login/searchPost', {
