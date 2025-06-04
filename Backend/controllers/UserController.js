@@ -64,9 +64,19 @@ const getProfile = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().lean(); // Ensure users is plain JSON
+    return res.status(200).json({ message: "All users", users });
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 module.exports = {
     searchUser,
     searchPost,
-    getProfile
+    getProfile,
+    getAllUsers
 };

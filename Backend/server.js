@@ -21,7 +21,7 @@ const {
 } = require('./controllers/PostController');
 
 const {
-  searchUser, searchPost, getProfile
+  searchUser, searchPost, getProfile,getAllUsers
 } = require('./controllers/UserController');
 
 const {sendMessage,getMessages} = require('./controllers/chatController');
@@ -70,6 +70,7 @@ app.get('/login/getMyPosts', isLoggedIn, getMyPosts);
 app.get('/login/searchUser', isLoggedIn, searchUser);
 app.get('/login/searchPost', isLoggedIn, searchPost); 
 app.get('/login/getProfile', isLoggedIn, getProfile);
+app.get('/login/getAllUsers',isLoggedIn,getAllUsers)
 
 
 // Start server (single call)

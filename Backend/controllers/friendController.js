@@ -2,6 +2,7 @@ const User = require('../models/User');
 
  const sendFriendRequest = async (req, res) => {
   try {
+    console.log("Request body:", req.body);
     const { receiverId } = req.body;
     const senderId = req.user._id; 
     console.log("Sender ID:", senderId);
@@ -13,6 +14,7 @@ const User = require('../models/User');
 
     
     const receiver = await User.findById(receiverId);
+ 
    
     if (receiver.friendsRequests.includes(senderId)) {
       return res.status(400).json({ message: "Request already sent." });
@@ -22,11 +24,13 @@ const User = require('../models/User');
       return res.status(400).json({ message: "Already friends." });
     }
     receiver.friendsRequests.push(senderId);
+    console.log(receiver.friendsRequests);
     await receiver.save();
 
     res.json({ message: 'Friend request sent' });
   } catch (err) {
     res.status(500).json({ error: 'Error sending friend request' });
+    console.error("Error in sendFriendRequest:", err);
   }
 };
 
