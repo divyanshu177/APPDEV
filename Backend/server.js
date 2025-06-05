@@ -13,7 +13,8 @@ const {
 } = require('./controllers/SellerController');
 
 const {
-  sendFriendRequest, acceptFriendRequest, rejectFriendRequest, getFriendRequests
+  sendFriendRequest, acceptFriendRequest, rejectFriendRequest, getFriendRequests,
+  getFriends
 } = require('./controllers/friendController');
 
 const {
@@ -57,7 +58,7 @@ app.post('/login/sendFriendRequest', isLoggedIn, sendFriendRequest);
 app.post('/login/acceptFriendRequest', isLoggedIn, acceptFriendRequest);
 app.post('/login/rejectFriendRequest', isLoggedIn, rejectFriendRequest);
 app.get('/login/getFriendRequests', isLoggedIn, getFriendRequests);
-
+app.get('/login/getFriends', isLoggedIn, getFriends);
 // Post routes
 app.post('/login/createPost', isLoggedIn, createPost);
 app.put('/login/updatePost/:postId', isLoggedIn, updatePost);
