@@ -7,7 +7,7 @@ const Service = require('../models/service');
 
 const createPost = async (req, res) => {
     try {
-        const {sellerId, serviceId, desc,image ,dummySeller} = req.body;
+        const {sellerId, serviceId, desc,image ,dummySeller,serviceName} = req.body;
         console.log(serviceId);
         const service = await Service.findById(serviceId);
  
@@ -46,6 +46,7 @@ const createPost = async (req, res) => {
           desc: desc,
           cost: costo,
           image: image,
+          serviceName: serviceName,
           dummyseller: dummySeller,
           dummysellerId: dummySellerId,
           referredAt: new Date()

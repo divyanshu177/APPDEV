@@ -2,7 +2,9 @@ const Service = require('../models/service');
 
 // Add a new service
 const addService = async (req, res) => {
+  console.log("Adding service with body:", req.body);
   try {
+    
     const {
       name,
       stock,
@@ -12,16 +14,13 @@ const addService = async (req, res) => {
       seller,
       originalPrice,
       reducedPrice,
-      dummyseller,
+    
       dummysellerSharePercent,
       sellerSharePercent
     } = req.body;
 
     // Validate required fields
-if (!name || !stock || !description || !category || !image || !seller || !originalPrice || !reducedPrice) {
-      return res.status(400).json({ message: "All fields are required" });   
-      }
-      
+
       
     const newService = new Service({    
       name,
@@ -30,7 +29,7 @@ if (!name || !stock || !description || !category || !image || !seller || !origin
       category,
       image,
       seller,
-      dummyseller,
+    
       originalPrice,
       reducedPrice,
       sellerSharePercent,
