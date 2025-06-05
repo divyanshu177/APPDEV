@@ -27,11 +27,6 @@ export default function DisplayUsersScreen() {
     alert(`Friend request sent to ${user.name}`);
   } catch (error) {
     console.error('Error sending friend request:', error);
-    if (error.response?.data?.message) {
-      alert(error.response.data.message);
-    } else {
-      alert('Something went wrong. Try again.');
-    }
   }
 };
 

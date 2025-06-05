@@ -29,14 +29,14 @@ export default function FriendRequestsScreen() {
   };
 
   useEffect(() => {
-    fetchFriendRequests();
+    fetchFriendRequests(); 
   }, []);
 
   const handleAccept = async (senderId) => {
     try {
       await axiosInstance.post('/login/acceptFriendRequest', { senderId });
       Alert.alert('Success', 'Friend request accepted');
-      fetchFriendRequests(); // refresh list
+      fetchFriendRequests(); 
     } catch (err) {
       Alert.alert('Error', 'Could not accept request');
       console.error(err);

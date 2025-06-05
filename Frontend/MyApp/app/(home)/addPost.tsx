@@ -1,84 +1,118 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Alert, Switch } from 'react-native';
-import axiosInstance from '../../app/axiosInstance';
+import React, { useState, useEffect } from 'react';
+import {
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
 
-export default function CreatePostScreen() {
-  const [formData, setFormData] = useState({
+interface FormData {
+  sellerId: string;
+  serviceId: string;
+  serviceName: string;
+  desc: string;
+  image: string;
+  dummySeller: string;
+}
+
+export default function AddPostScreen() {
+  const router = useRouter(); // <-- Use router instead of navigation
+
+  const [formData, setFormData] = useState<FormData>({
+    sellerId: '',
     serviceId: '',
     serviceName: '',
-    sellerId: '',
     desc: '',
-    cost: '',
     image: '',
-    dummyseller: false,
-    dummysellerId: '',
+    dummySeller: '0',
   });
 
-  interface FormData {
-    serviceId: string;
-    serviceName: string;
-    sellerId: string;
-    desc: string;
-    cost: string;
-    image: string;
-    dummyseller: boolean;
-    dummysellerId: string;
-  }
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userString = await AsyncStorage.getItem('user');
+        if (userString) {
+          const user = JSON.parse(userString);
+          if (user && user.id) {
+            setFormData((prev) => ({ ...prev, sellerId: user.id }));
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load user info:', error);
+      }
+    };
+    fetchUser();
+  }, []);
 
-  type FormDataKey = keyof FormData;
-
-  const handleChange = (key: FormDataKey, value: FormData[FormDataKey]) => {
-    setFormData({ ...formData, [key]: value });
+  const handleChange = (key: keyof FormData, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
 
   const handleSubmit = async () => {
+    if (!formData.sellerId) {
+      Alert.alert('Error', 'Seller ID not found. Please login first.');
+      return;
+    }
+
     try {
       const payload = {
         ...formData,
-        cost: Number(formData.cost),
-        dummyseller: formData.dummyseller ? 1 : 0,
+        dummySeller: Number(formData.dummySeller),
       };
+      const token = await AsyncStorage.getItem('userToken');
 
-      const response = await axiosInstance.post('/login/createPost', payload);
-      Alert.alert('✅ Post Created', 'Your post has been successfully submitted!');
-      setFormData({
-        serviceId: '',
-        serviceName: '',
-        sellerId: '',
-        desc: '',
-        cost: '',
-        image: '',
-        dummyseller: false,
-        dummysellerId: '',
-      });
-    } catch (error) {
-      console.error('POST Error:', error);
-      Alert.alert('❌ Error', 'Something went wrong while submitting the post.');
+      const response = await axios.post(
+        'http://10.70.13.161:3000/login/createPost',
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      Alert.alert('Success', response.data.message || 'Post created!');
+    } catch (error: any) {
+      console.error('Axios Error:', error.response?.data || error.message);
+      Alert.alert('Error', 'Failed to create post. Please try again.');
     }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Create New Post</Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>Create Post</Text>
 
-      <TextInput style={styles.input} placeholder="Service ID" value={formData.serviceId} onChangeText={(text) => handleChange('serviceId', text)} />
-      <TextInput style={styles.input} placeholder="Service Name" value={formData.serviceName} onChangeText={(text) => handleChange('serviceName', text)} />
-      <TextInput style={styles.input} placeholder="Seller ID" value={formData.sellerId} onChangeText={(text) => handleChange('sellerId', text)} />
-      <TextInput style={styles.input} placeholder="Description" value={formData.desc} onChangeText={(text) => handleChange('desc', text)} multiline />
-      <TextInput style={styles.input} placeholder="Cost (₹)" value={formData.cost} onChangeText={(text) => handleChange('cost', text)} keyboardType="numeric" />
-      <TextInput style={styles.input} placeholder="Image URL" value={formData.image} onChangeText={(text) => handleChange('image', text)} />
-
-      <View style={styles.switchRow}>
-        <Text style={styles.switchLabel}>Dummy Seller?</Text>
-        <Switch value={formData.dummyseller} onValueChange={(value) => handleChange('dummyseller', value)} />
-      </View>
-
-      {formData.dummyseller && (
-        <TextInput style={styles.input} placeholder="Dummy Seller ID" value={formData.dummysellerId} onChangeText={(text) => handleChange('dummysellerId', text)} />
-      )}
+      {(Object.keys(formData) as (keyof FormData)[]).map((key) => (
+        <TextInput
+          key={key}
+          style={styles.input}
+          placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+          placeholderTextColor="#66788a"
+          value={formData[key]}
+          keyboardType={key === 'dummySeller' ? 'numeric' : 'default'}
+          onChangeText={(text) => handleChange(key, text)}
+        />
+      ))}
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit Post</Text>
+        <Text style={styles.buttonText}>Create Post</Text>
+      </TouchableOpacity>
+
+      {/* Navigate to Update Post using router.push */}
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: '#28a745', marginTop: 12 }]}
+        onPress={() => router.push('/updatePost')}
+      >
+        <Text style={styles.buttonText}>Go to Update Post</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -86,56 +120,42 @@ export default function CreatePostScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#E8F4FC',
-    padding: 20,
-    flexGrow: 1,
+    flex: 1,
+    backgroundColor: '#e6f0fa',
+    padding: 16,
   },
-  header: {
+  title: {
     fontSize: 26,
-    fontWeight: 'bold',
-    color: '#144272',
-    marginBottom: 20,
+    fontWeight: '700',
+    color: '#2a3f5f',
     textAlign: 'center',
+    marginBottom: 20,
   },
   input: {
-    backgroundColor: '#ffffff',
-    borderColor: '#d0e4f5',
     borderWidth: 1,
-    borderRadius: 12,
+    borderColor: '#cddff6',
+    backgroundColor: '#f4f8ff',
     padding: 14,
+    borderRadius: 12,
     marginBottom: 14,
-    fontSize: 16,
-    color: '#1b1b1b',
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-  },
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 14,
-    justifyContent: 'space-between',
-    paddingHorizontal: 4,
-  },
-  switchLabel: {
-    fontSize: 16,
-    color: '#144272',
+    color: '#1f2d3d',
+    fontSize: 15,
   },
   button: {
-    backgroundColor: '#0077b6',
-    paddingVertical: 14,
+    backgroundColor: '#007acc',
+    paddingVertical: 15,
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 4,
+    shadowColor: '#007acc',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 4,
   },
   buttonText: {
     color: '#ffffff',
-    fontWeight: 'bold',
+    fontWeight: '700',
     fontSize: 16,
   },
 });

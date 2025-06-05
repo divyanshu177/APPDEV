@@ -8,6 +8,8 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
 
 import axiosInstance from '../../app/axiosInstance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,6 +28,14 @@ interface FormData {
 }
 
 export default function AddServiceScreen() {
+   const router = useRouter();
+   
+     // Redirect after 3 seconds
+     useEffect(() => {
+       const timer = setTimeout(() => {
+         router.replace('/(auth)/login');
+       }, 3000)});
+   
   const [formData, setFormData] = useState<FormData>({
     name: '',
     stock: 0,
@@ -53,13 +63,12 @@ export default function AddServiceScreen() {
     }));
   };
 
-  const handleSubmit = async () => {
-    try {
-      console.log('Reached handleSubmit');
-      
-      const userString = await AsyncStorage.getItem('user');
-      console.log('User String:', userString);
-    const user = userString ? JSON.parse(userString) : null;
+  const payload = async () => {
+      try {
+          console.log('Reached payload');
+          const userString = await AsyncStorage.getItem('user');
+          console.log('User String:', userString);
+          const user = userString ? JSON.parse(userString) : null;
 
     if (!user || !user.id) {
       Alert.alert('Error', 'User info not found. Please log in again.');
@@ -67,29 +76,29 @@ export default function AddServiceScreen() {
     }
 
     const sellerId = user.id;
-      console.log('Seller ID:', sellerId);
+    console.log('Seller ID:', sellerId);
 
-      const payload = { ...formData, seller: sellerId };
-      console.log('Payload:', payload);
-      
-   const token = await AsyncStorage.getItem('userToken');
-
-if (token) {
-  console.log('Retrieved token:', token);
-} else {
-  console.log('No token found');
+    const payload = { ...formData, seller: sellerId };
+    console.log('Payload:', payload);
+    return payload;
+  }
+  catch (error) {
+    console.error('Error in payload function:', error);  
+    return null; 
+  }
 }
      
       
 
-const response = await axiosInstance.post('/login/addService', payload)
- 
-    
 
 
+const handleSubmit = async (payload:any) => {
+    try {
+      const response = await axiosInstance.post('/login/addService', payload);
       Alert.alert('Service Added Successfully!');
       console.log('Response:', response.data);
-    } catch (error: any) {
+    } 
+    catch (error: any) {
       console.error('Axios Error:', error.response?.data || error.message);
       Alert.alert('Error', 'Failed to add service. Please try again.');
     }
@@ -114,8 +123,16 @@ const response = await axiosInstance.post('/login/addService', payload)
           onChangeText={(text) => handleChange(key as keyof FormData, text)}
         />
       ))}
+      
 
-      <TouchableOpacity onPress={handleSubmit} style={styles.button}>
+      <TouchableOpacity 
+      onPress={async () => {
+        const data = await payload();
+        if(data){
+           handleSubmit(data);
+        }
+      }} 
+        style={styles.button}>
         <Text style={styles.buttonText}>Add Service</Text>
       </TouchableOpacity>
     </ScrollView>
