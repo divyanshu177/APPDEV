@@ -30,11 +30,7 @@ interface FormData {
 export default function AddServiceScreen() {
    const router = useRouter();
    
-     // Redirect after 3 seconds
-     useEffect(() => {
-       const timer = setTimeout(() => {
-         router.replace('/(auth)/login');
-       }, 3000)});
+     
    
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -81,7 +77,7 @@ export default function AddServiceScreen() {
     const payload = { ...formData, seller: sellerId };
     console.log('Payload:', payload);
     return payload;
-  }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      }
   catch (error) {
     console.error('Error in payload function:', error);  
     return null; 
