@@ -27,45 +27,50 @@ export default function HomeLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="index.tsx"
         options={{
           title: 'Home',
+          headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="home" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="network"
+        name="network.tsx"
         options={{
           title: 'Network',
+            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="users" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="addPost"
+        name="addPost.tsx"
         options={{
           title: 'Add Post',
+            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="plus-circle" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="notification"
+        name="notification.tsx"
         options={{
           title: 'Notifications',
+            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="bell" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="addService"
+        name="addService.tsx"
         options={{
           title: 'Services',
+            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="briefcase" size={size} color={color} />
           ),

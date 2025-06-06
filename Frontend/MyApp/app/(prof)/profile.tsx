@@ -2,12 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import axiosInstance from '../axiosInstance'; // adjust path as needed
 import {useRouter} from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
 
 export default function ProfileScreen() {
+  const router=useRouter();
+
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+
+const getposts= async() =>{
+    router.push('/(prof)/posts')
+}
+
+const update = async() => {
+   router.push('/(prof)/update')
+}
 
 const getProfile = async () => {
     try {
@@ -37,18 +47,12 @@ const getProfile = async () => {
     );
   }
 
-const home = async() =>{
-      const router=useRouter();
-      router.replace('/(home)');
-    }
+
+
    
   return (
     <ScrollView contentContainerStyle={styles.container}>
     <View style={styles.headerContainer}>  
-      <TouchableOpacity onPress={home} style={styles.homeIcon}>
-        <Ionicons name="home-outline" size={28} color="#333"  />
-      </TouchableOpacity>
-
     <View style={styles.profileContainer}>
       <Image
         source={{ uri: profile.profilePicture.startsWith('http') ? profile.profilePicture : `http://your-backend-url.com/uploads/${profile.profilePicture}` }}
@@ -72,6 +76,14 @@ const home = async() =>{
           <Text style={styles.serviceItem}>No services posted yet.</Text>
         )}
       </View>
+      <TouchableOpacity onPress={getposts} style={styles.postsContainer}>
+          <Text style={styles.postsText}>📄 Your Posts</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={update} style={styles.postsContainer}>
+          <Text style={styles.postsText}>📝 Update Profile</Text>
+      </TouchableOpacity>
+
     </ScrollView>
   );
 }
@@ -148,5 +160,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  postsContainer: {
+  width: '100%',
+  backgroundColor: '#F5F5F5',
+  padding: 15,
+  marginTop: 25,
+  borderRadius: 10,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+},
+
+postsText: {
+  fontSize: 16,
+  fontWeight: 'bold',
+  color: '#2F2F2F',
+},
+
 });
 

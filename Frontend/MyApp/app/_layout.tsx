@@ -1,11 +1,12 @@
 import { Stack } from 'expo-router';
 
-export default function Layout() {
+export default function RootLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false, // Hides header globally
+        headerShown: false,  // Hide headers globally by default
       }}
     />
   );
 }
+
