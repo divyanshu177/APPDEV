@@ -17,9 +17,9 @@ const Login = () => {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    axios.post('http://10.70.13.161:3000/login', { email, password })
+    axios.post('http://10.61.36.91:3000/login', { email, password })
       .then(async (response) => {
-        const { token, user } = response.data; // expect backend sends user info here
+        const { token, user } = response.data;
 
         if (token && user) {
           await AsyncStorage.setItem('userToken', token);
