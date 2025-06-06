@@ -12,6 +12,9 @@ import {
 } from 'react-native';
 import axiosInstance from '../../app/axiosInstance';
 import { FontAwesome } from '@expo/vector-icons';
+import {useRouter} from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+
 
 type Post = {
   _id: string;
@@ -39,7 +42,14 @@ const HomePage = () => {
     }
   };
 
-  const searchPosts = async () => {
+const getProfile = async() =>{
+    const router=useRouter();
+    router.replace('/(auth)/profile');
+  }
+ 
+
+const searchPosts = async () => {
+  console.log("reached serchpost");
     if (!searchQuery.trim()) {
       fetchAllPosts();
       return;
@@ -64,18 +74,23 @@ const HomePage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search services..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholderTextColor="#666"
-        />
-        <TouchableOpacity onPress={searchPosts} style={styles.searchButton}>
-          <FontAwesome name="search" size={20} color="#fff" />
-        </TouchableOpacity>
-      </View>
+    <View style={styles.searchContainer}>
+  <TouchableOpacity style={styles.iconButton} onPress={getProfile}>
+    <Ionicons name="person-circle-outline" size={28} color="#333" />
+  </TouchableOpacity>
+
+  <TextInput
+    style={styles.searchInput}
+    placeholder="Search services..."
+    value={searchQuery}
+    onChangeText={setSearchQuery}
+    placeholderTextColor="#666"
+  />
+
+  <TouchableOpacity onPress={searchPosts} style={styles.searchButton}>
+    <FontAwesome name="search" size={20} color="#fff" />
+  </TouchableOpacity>
+</View>
 
       {loading ? (
         <ActivityIndicator size="large" color="#007acc" />
@@ -137,26 +152,32 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     flexDirection: 'row',
-    margin: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
     alignItems: 'center',
-    paddingHorizontal: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    padding: 10,
+    gap: 10, // spacing between items (if using newer RN versions)
+    backgroundColor: '#fff',
+  },
+  iconButton: {
+    padding: 6,
+    borderRadius: 10,
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
-    color: '#333',
+    height: 40,
+    backgroundColor: '#eee',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    color: '#000',
   },
   searchButton: {
-    backgroundColor: '#007acc',
+    backgroundColor: '#2F2F2F',
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   scrollContainer: {
     padding: 16,
@@ -235,4 +256,5 @@ const styles = StyleSheet.create({
     color: '#888',
     textAlign: 'center',
   },
+
 });

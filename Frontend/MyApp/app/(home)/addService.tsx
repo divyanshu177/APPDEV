@@ -27,15 +27,7 @@ interface FormData {
   sellerSharePercent: number;
 }
 
-export default function AddServiceScreen() {
-   const router = useRouter();
-   
-     // Redirect after 3 seconds
-     useEffect(() => {
-       const timer = setTimeout(() => {
-         router.replace('/(auth)/login');
-       }, 3000)});
-   
+export default function AddServiceScreen() {   
   const [formData, setFormData] = useState<FormData>({
     name: '',
     stock: 0,
