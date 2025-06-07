@@ -32,6 +32,7 @@ export default function AddServiceScreen() {
    
      
    
+export default function AddServiceScreen() {   
   const [formData, setFormData] = useState<FormData>({
     name: '',
     stock: 0,

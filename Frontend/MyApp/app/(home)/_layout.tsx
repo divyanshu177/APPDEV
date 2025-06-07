@@ -30,6 +30,7 @@ export default function HomeLayout() {
         name="index"
         options={{
           title: 'Home',
+          headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="home" size={size} color={color} />
           ),
@@ -39,6 +40,7 @@ export default function HomeLayout() {
         name="friends"
         options={{
           title: 'Network',
+            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="users" size={size} color={color} />
           ),
@@ -48,6 +50,7 @@ export default function HomeLayout() {
         name="addPost"
         options={{
           title: 'Add Post',
+            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="plus-circle" size={size} color={color} />
           ),
@@ -57,6 +60,7 @@ export default function HomeLayout() {
         name="notification"
         options={{
           title: 'Notifications',
+            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="bell" size={size} color={color} />
           ),
@@ -66,6 +70,7 @@ export default function HomeLayout() {
         name="addService"
         options={{
           title: 'Services',
+            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="briefcase" size={size} color={color} />
           ),

@@ -7,14 +7,10 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Image,
-  TextInput,
   TouchableOpacity,
 } from 'react-native';
 import axiosInstance from '../../app/axiosInstance';
-import { FontAwesome } from '@expo/vector-icons';
-import {useRouter} from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-
+import { useRouter } from 'expo-router';
 
 type Post = {
   _id: string;
@@ -23,77 +19,35 @@ type Post = {
   cost: number;
   serviceId?: { name?: string };
   sellerId?: { name?: string };
+  dummyseller?: number;
+  dummysellerId?: { name?: string; _id?: string };
 };
 
-const HomePage = () => {
+export default function YourPost() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
 
-  const fetchAllPosts = async () => {
-    setLoading(true);
+  const getPosts = async () => {
     try {
-      const response = await axiosInstance.get('/login/displayPost');
-      console.log(response);
-      setPosts(response.data.posts);
-    } catch {
-      setPosts([]);
+      const response = await axiosInstance.get('/login/getMyPosts');
+      const data = response.data;
+      setPosts(data.posts);
+    } catch (error) {
+      console.log('Error fetching your posts', error);
     } finally {
       setLoading(false);
     }
   };
 
-const getProfile = async() =>{
-    const router=useRouter();
-    router.replace('/(prof)/profile');
-  }
- 
 
-const searchPosts = async () => {
-  console.log("reached serchpost");
-    if (!searchQuery.trim()) {
-      fetchAllPosts();
-      return;
-    }
-    
-    setLoading(true);
-    try {
-      const response = await axiosInstance.get('/login/searchPost', {
-        params: { serviceName: searchQuery.trim() },
-      });
-      console.log(response.data);
-      setPosts(response.data.posts);
-    } catch {
-      setPosts([]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    fetchAllPosts();
+    getPosts();
   }, []);
+
 
   return (
     <SafeAreaView style={styles.container}>
-    <View style={styles.searchContainer}>
-  <TouchableOpacity style={styles.iconButton} onPress={getProfile}>
-    <Ionicons name="person-circle-outline" size={28} color="#333" />
-  </TouchableOpacity>
-
-  <TextInput
-    style={styles.searchInput}
-    placeholder="Search services..."
-    value={searchQuery}
-    onChangeText={setSearchQuery}
-    placeholderTextColor="#666"
-  />
-
-  <TouchableOpacity onPress={searchPosts} style={styles.searchButton}>
-    <FontAwesome name="search" size={20} color="#fff" />
-  </TouchableOpacity>
-</View>
-
       {loading ? (
         <ActivityIndicator size="large" color="#007acc" />
       ) : posts.length === 0 ? (
@@ -110,23 +64,21 @@ const searchPosts = async () => {
               <Text style={styles.description}>{item.desc}</Text>
 
               <View style={styles.detailsRow}>
-                <Text style={styles.detailLabel}>sellerName:</Text>
+                <Text style={styles.detailLabel}>Seller Name:</Text>
                 <Text style={styles.detailValue}>{item.sellerId?.name || 'Unknown'}</Text>
               </View>
-             {item.dummyseller === 1 && item.dummysellerId && (
-  <View style={styles.detailsRow}>
-    <Text style={styles.detailLabel}>dummyseller:</Text>
-    <Text style={styles.detailValue}>
-      {item.dummysellerId?.name || item.dummysellerId?._id || 'Unknown'}
-    </Text>
-  </View>
-)}
 
-
-
+              {item.dummyseller === 1 && item.dummysellerId && (
+                <View style={styles.detailsRow}>
+                  <Text style={styles.detailLabel}>Dummy Seller:</Text>
+                  <Text style={styles.detailValue}>
+                    {item.dummysellerId?.name || item.dummysellerId?._id || 'Unknown'}
+                  </Text>
+                </View>
+              )}
 
               <View style={styles.detailsRow}>
-                <Text style={styles.detailLabel}>cost -</Text>
+                <Text style={styles.detailLabel}>Cost:</Text>
                 <Text style={styles.detailValue}>₹{item.cost}</Text>
               </View>
 
@@ -143,43 +95,12 @@ const searchPosts = async () => {
       )}
     </SafeAreaView>
   );
-};
-
-export default HomePage;
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f2f6fc',
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    gap: 10, // spacing between items (if using newer RN versions)
-    backgroundColor: '#fff',
-  },
-  iconButton: {
-    padding: 6,
-    borderRadius: 10,
-    backgroundColor: '#f0f0f0',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  searchInput: {
-    flex: 1,
-    height: 40,
-    backgroundColor: '#eee',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    color: '#000',
-  },
-  searchButton: {
-    backgroundColor: '#2F2F2F',
-    padding: 10,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   scrollContainer: {
     padding: 16,
@@ -258,5 +179,4 @@ const styles = StyleSheet.create({
     color: '#888',
     textAlign: 'center',
   },
-
 });
