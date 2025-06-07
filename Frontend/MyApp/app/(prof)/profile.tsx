@@ -16,7 +16,7 @@ const getposts= async() =>{
 }
 
 const update = async() => {
-   router.push('/(prof)/update')
+   router.push('/(prof)/posts')
 }
 
 const getProfile = async () => {

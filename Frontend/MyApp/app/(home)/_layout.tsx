@@ -27,7 +27,7 @@ export default function HomeLayout() {
       }}
     >
       <Tabs.Screen
-        name="index.tsx"
+        name="index"
         options={{
           title: 'Home',
           headerShown :false,
@@ -37,7 +37,7 @@ export default function HomeLayout() {
         }}
       />
       <Tabs.Screen
-        name="network.tsx"
+        name="network"
         options={{
           title: 'Network',
             headerShown :false,
@@ -47,7 +47,7 @@ export default function HomeLayout() {
         }}
       />
       <Tabs.Screen
-        name="addPost.tsx"
+        name="addPost"
         options={{
           title: 'Add Post',
             headerShown :false,
@@ -57,7 +57,7 @@ export default function HomeLayout() {
         }}
       />
       <Tabs.Screen
-        name="notification.tsx"
+        name="notification"
         options={{
           title: 'Notifications',
             headerShown :false,
@@ -67,7 +67,7 @@ export default function HomeLayout() {
         }}
       />
       <Tabs.Screen
-        name="addService.tsx"
+        name="addService"
         options={{
           title: 'Services',
             headerShown :false,
