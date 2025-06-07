@@ -40,7 +40,7 @@ connectDb().then(() => {
 
 // Chat routes
 app.post('/login/sendMessage', isLoggedIn, sendMessage);
-app.get('/login/getMessages', isLoggedIn, getMessages);
+app.get('/login/getMessages/:friendId', isLoggedIn, getMessages);
 
 // Auth routes
 app.post('/register', register);
