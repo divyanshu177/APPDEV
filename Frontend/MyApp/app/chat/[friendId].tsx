@@ -33,6 +33,8 @@ export default function ChatScreen() {
   const getMessages = async () => {
     try {
       const res = await axiosInstance.get(`/login/getMessages/${friendId}`);
+      console.log("Friend ID:", friendId);
+
       setMessages(res.data.messages || []);
     } catch (error) {
       console.error('Failed to load messages', error);
@@ -77,7 +79,7 @@ export default function ChatScreen() {
     <FlatList
   ref={flatListRef}
   data={messages}
-  
+  inverted
   keyExtractor={(item) => item._id}
   renderItem={({ item }) => {
     const isSender = item.sender !== friendId;
