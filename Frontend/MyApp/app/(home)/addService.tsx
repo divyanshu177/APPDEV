@@ -27,6 +27,11 @@ interface FormData {
   sellerSharePercent: number;
 }
 
+export default function AddServiceScreen() {
+   const router = useRouter();
+   
+     
+   
 export default function AddServiceScreen() {   
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -73,7 +78,7 @@ export default function AddServiceScreen() {
     const payload = { ...formData, seller: sellerId };
     console.log('Payload:', payload);
     return payload;
-  }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      }
   catch (error) {
     console.error('Error in payload function:', error);  
     return null; 

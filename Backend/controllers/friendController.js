@@ -91,13 +91,24 @@ const getFriendRequests = async (req, res) => {
     res.status(500).json({ error: 'Error fetching friend requests' });
   }
 };
-
-
+const getFriends = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate('friends', 'name email');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    console.log(" Friends of user:", user.friends);
+    res.json({ friends: user.friends });
+  } catch (err) {
+    res.status(500).json({ error: 'Error fetching friends list' });
+  }
+};
 
 module.exports = {
   sendFriendRequest,
   acceptFriendRequest,
   rejectFriendRequest,
-  getFriendRequests
+  getFriendRequests,
+  getFriends
 };
 

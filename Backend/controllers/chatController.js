@@ -27,15 +27,23 @@ const sendMessage = async (req, res) => {
 
 const getMessages = async (req, res) => {
   try {
-    const userId  = req.user._id;
-    const user = await User.findById(userId);
-    const chats = user.chats;
-    return res.status(200).json({ success: true, chats });
+    const userId = req.user._id; // logged-in user
+    const friendId = req.params.friendId; // target user
+
+    const messages = await Message.find({
+      $or: [
+        { sender: userId, receiver: friendId },
+        { sender: friendId, receiver: userId }
+      ]
+    }).sort({ timestamp: -1 }); 
+
+    return res.status(200).json({ success: true, messages });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ success: false, error: 'Failed to retrieve messages' });
   }
-
 };
+
 module.exports = {
   sendMessage,
   getMessages
