@@ -15,9 +15,10 @@ const getposts= async() =>{
     router.push('/(prof)/posts')
 }
 
-const update = async() => {
-   router.push('/(prof)/posts')
-}
+
+const update = async () => {
+  router.push('/(prof)/pictureProf');
+};
 
 const getProfile = async () => {
     try {
@@ -52,14 +53,27 @@ const getProfile = async () => {
    
   return (
     <ScrollView contentContainerStyle={styles.container}>
-    <View style={styles.headerContainer}>  
-    <View style={styles.profileContainer}>
-      <Image
-        source={{ uri: profile.profilePicture.startsWith('http') ? profile.profilePicture : `http://your-backend-url.com/uploads/${profile.profilePicture}` }}
-        style={styles.profileImage}
-      />
-      </View>
-      </View>  
+  <View style={styles.headerContainer}>  
+  <View style={styles.profileContainer}>
+    {profile.profilePicture ? (
+      <TouchableOpacity onPress={update}>
+        <Image
+          source={{
+            uri: profile.profilePicture.startsWith('http')
+              ? profile.profilePicture
+              : `http://10.81.16.90:3000/uploads/${profile.profilePicture}`,
+          }}
+          style={styles.profileImage}
+        />
+      </TouchableOpacity>
+    ) : (
+      <TouchableOpacity onPress={update}>
+        <Text style={{ color: 'blue', fontSize: 16 }}>Upload Profile Picture</Text>
+      </TouchableOpacity>
+    )}
+  </View>
+</View>
+
 
       <Text style={styles.name}>{profile.name}</Text>
       <Text style={styles.email}>📧 {profile.email}</Text>
