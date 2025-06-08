@@ -1,5 +1,8 @@
 const User = require('../models/User');
 const Post = require('../models/post');
+const Service = require('../models/service');
+const upload = require('../middlewares/upload');
+
 
 const searchUser = async(req, res) =>{
     try{
@@ -21,12 +24,14 @@ const searchUser = async(req, res) =>{
 
 const searchPost = async (req, res) => {
   try {
-    const serviceName = req.body.serviceName;
+    const serviceName = req.query.serviceName;
     console.log("Searching for posts with serviceName:", serviceName);
 
     const posts = await Post.find({
       serviceName: { $regex: serviceName, $options: 'i' }
-    });
+    }).populate('serviceId')
+      .populate('sellerId')
+      .populate('dummysellerId');
 
     if (!posts || posts.length === 0) {
       return res.status(404).json({ message: "Post not found" });
@@ -74,9 +79,38 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const uploadProfile=async (req, res) => {
+  try {
+    console.log('Upload:');
+
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+    const user = await User.findById(req.params.id);
+
+    // Optional: remove old file
+    if (user.profilePicture) {
+      const oldPath = path.join(__dirname, '..', 'uploads', user.profilePicture);
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+
+    user.profilePicture = req.file.filename;
+    await user.save();
+
+
+    res.status(200).json({ success: true, profilePicture: user.profilePicture });
+  } catch (error) {
+    res.status(500).json({ error: 'Error uploading image' });
+  }
+};
+
+
+
 module.exports = {
     searchUser,
     searchPost,
     getProfile,
-    getAllUsers
+    getAllUsers,
+    uploadProfile
 };

@@ -1,8 +1,14 @@
+const path = require('path');
 const express = require('express');
 const connectDb = require('./config/db');
 const isLoggedIn = require('./middlewares/isLoggedIn');
 const isAuthorized = require('./middlewares/isAuthorized');
 const cors = require('cors');
+const upload = require('./middlewares/upload');
+const router = express.Router();
+
+
+
 
 const {
   register, login, logout
@@ -21,7 +27,7 @@ const {
 } = require('./controllers/PostController');
 
 const {
-  searchUser, searchPost, getProfile,getAllUsers
+  searchUser, searchPost, getProfile,getAllUsers,uploadProfile
 } = require('./controllers/UserController');
 
 const {sendMessage,getMessages} = require('./controllers/chatController');
@@ -30,6 +36,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 
 // Connect to DB
@@ -70,7 +78,8 @@ app.get('/login/getMyPosts', isLoggedIn, getMyPosts);
 app.get('/login/searchUser', isLoggedIn, searchUser);
 app.get('/login/searchPost', isLoggedIn, searchPost); 
 app.get('/login/getProfile', isLoggedIn, getProfile);
-app.get('/login/getAllUsers',isLoggedIn,getAllUsers)
+app.get('/login/getAllUsers',isLoggedIn,getAllUsers);
+app.post('/login/updateProfilePicture/:id',upload.single('profilePicture'),uploadProfile);
 
 
 // Start server (single call)
