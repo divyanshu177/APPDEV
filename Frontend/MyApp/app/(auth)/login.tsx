@@ -17,7 +17,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    axios.post('http://10.81.16.90:3000/login', { email, password })
+    axios.post('http://10.81.16.78:3000/login', { email, password })
       .then(async (response) => {
         const { token, user } = response.data; // expect backend sends user info here
 

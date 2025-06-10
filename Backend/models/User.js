@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
 
   profilePicture: {
     type: String,
-    default: 'default-profile.png',
+    default: '',
   },
 
   walletBalance: {

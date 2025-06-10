@@ -2,6 +2,8 @@ const User = require('../models/User');
 const Post = require('../models/post');
 const Service = require('../models/service');
 const upload = require('../middlewares/upload');
+const path = require('path');
+const fs = require('fs')
 
 
 const searchUser = async(req, res) =>{
@@ -37,7 +39,7 @@ const searchPost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    // Separate priority posts (posted by friends) and others
+  
     const priorityPosts = posts.filter(post => 
       req.user.friends.includes(post.dummysellerId?.toString())
     );
@@ -45,7 +47,7 @@ const searchPost = async (req, res) => {
       !req.user.friends.includes(post.dummysellerId?.toString())
     );
 
-    // Combine, putting priority posts first
+    
     const sortedPosts = [...priorityPosts, ...otherPosts];
 
     console.log("Filtered priority posts:", priorityPosts);
@@ -79,31 +81,39 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-const uploadProfile=async (req, res) => {
+
+const uploadProfile = async (req, res) => {
   try {
-    console.log('Upload:');
+    console.log('Upload request received.');
+    console.log(req);
+    console.log('File:', req.file);
+    console.log('User ID:', req.params.id);
 
     if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
-      }
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
 
     const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Optional: remove old file
+    // Remove old image
     if (user.profilePicture) {
-      const oldPath = path.join(__dirname, '..', 'uploads', user.profilePicture);
+      const oldPath = path.join(__dirname, '..', 'uploads', path.basename(user.profilePicture));
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
 
-    user.profilePicture = req.file.filename;
+   
+    const fullUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    user.profilePicture = fullUrl;
     await user.save();
-
 
     res.status(200).json({ success: true, profilePicture: user.profilePicture });
   } catch (error) {
+    console.error('Error uploading profile picture:', error);
     res.status(500).json({ error: 'Error uploading image' });
   }
 };
+
 
 
 

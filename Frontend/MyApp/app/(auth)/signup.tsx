@@ -15,11 +15,11 @@ export default function Signup() {
 
   const handleSignup = () => {
     console.log('Signing up with:', { name, phone, email, password });
-    axios.post('http://10.81.16.90:3000/register', { name, phone, email, password })
+    axios.post('http://10.81.16.78:3000/register', { name, phone, email, password })
       .then(response => {
         console.log('Signup successful:', response.data);
-        // Navigate to login on success
-       router.replace('/login'); // Use replace to avoid going back to signup
+    
+       router.replace('/login'); 
 
       })
       

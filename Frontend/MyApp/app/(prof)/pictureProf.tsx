@@ -21,6 +21,7 @@ const uploadImage = async (image) => {
       name: `profile-${Date.now()}.jpg`,
       type: 'image/jpeg',
     });
+    console.log(formData)
 
     try {
       console.log(userId);
@@ -48,6 +49,7 @@ const pickImage = async () => {
       alert('Permission required');
       return;
     }
+    console.log(permission)
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,

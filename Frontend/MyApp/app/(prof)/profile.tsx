@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
-import axiosInstance from '../axiosInstance'; // adjust path as needed
+import axiosInstance from '../axiosInstance'; 
 import {useRouter} from 'expo-router';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 
@@ -24,6 +24,7 @@ const getProfile = async () => {
     try {
       const response = await axiosInstance.get('/login/getProfile');
       console.log('Profile Response:', response.data);
+      console.log(response.data.profile)
       setProfile(response.data.profile);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -35,6 +36,7 @@ const getProfile = async () => {
   useEffect(() => {
     getProfile();
   }, []);
+
 
   if (loading) {
     return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
@@ -52,27 +54,21 @@ const getProfile = async () => {
 
    
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-  <View style={styles.headerContainer}>  
+  <ScrollView contentContainerStyle={styles.container}>
+  <TouchableOpacity onPress={update}>
+        <Text style={{ color: 'blue', fontSize: 16 }}>Update Profile Picture</Text>
+  </TouchableOpacity>
+
   <View style={styles.profileContainer}>
-    {profile.profilePicture ? (
-      <TouchableOpacity onPress={update}>
         <Image
           source={{
-            uri: profile.profilePicture.startsWith('http')
-              ? profile.profilePicture
-              : `http://10.81.16.90:3000/uploads/${profile.profilePicture}`,
+           uri:profile.profilePicture
           }}
           style={styles.profileImage}
         />
-      </TouchableOpacity>
-    ) : (
-      <TouchableOpacity onPress={update}>
-        <Text style={{ color: 'blue', fontSize: 16 }}>Upload Profile Picture</Text>
-      </TouchableOpacity>
-    )}
+      
+    
   </View>
-</View>
 
 
       <Text style={styles.name}>{profile.name}</Text>
@@ -110,7 +106,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   headerContainer: {
-    
     position: 'relative',
     backgroundColor: '#fff',
     paddingTop: 10,
@@ -122,12 +117,13 @@ const styles = StyleSheet.create({
   },
   profileContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    maxHeight:100, 
   },
   profileImage: {
-    width: 120,
-    height: 120,
+    width: 100,
+    height:100,
     borderRadius: 60,
     backgroundColor: '#ccc',
   },
