@@ -1,4 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
+
+const router = useRouter();
+
+import { use, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -75,6 +79,7 @@ export default function FriendRequestsScreen() {
     }
   };
 
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -95,22 +100,28 @@ export default function FriendRequestsScreen() {
     <View style={styles.container}>
       <Text style={styles.heading}>Friends</Text>
       <FlatList
-        data={friends}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.name}>{item.name}</Text>
-            <Text style={styles.email}>{item.email}</Text>
-          </View>
-        )}
-        ListEmptyComponent={<Text style={styles.emptyText}>No friends yet.</Text>}
-      />
+  data={friends}
+  keyExtractor={(item) => item._id}
+  renderItem={({ item }) => (
+    <View style={styles.card}>
+      <Text style={styles.name}>{item.name}</Text>
+      <Text style={styles.email}>{item.email}</Text>
 
-      
+      <TouchableOpacity
+        style={styles.chatButton}
+        onPress={() => router.push({ pathname: '/chat/[friendId]', params: { friendId: item._id, friendName: item.name } })}
+      >
+        <Text style={styles.chatButtonText}>Chat</Text>
+      </TouchableOpacity>
+    </View>
+  )}
+  ListEmptyComponent={<Text style={styles.emptyText}>No friends yet.</Text>}
+/>
+
       <View style={styles.separatorContainer}>
-  <View style={styles.separatorLine} />
-  <Text style={styles.heading}>Friend Requests</Text>
-</View>
+        <View style={styles.separatorLine} />
+        <Text style={styles.heading}>Friend Requests</Text>
+      </View>
 
       <FlatList
         data={friendRequests}
@@ -212,4 +223,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#FEE1B6',
     marginRight: 8,
   },
+  chatButton: {
+  backgroundColor: '#FEE1B6',
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  borderRadius: 6,
+  marginTop: 0,
+
+  left: '90%',
+  alignSelf: 'flex-start',
+},
+chatButtonText: {
+  color: '#2F2F2F',
+  fontWeight: '600',
+},
+
 });

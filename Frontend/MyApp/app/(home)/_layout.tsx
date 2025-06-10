@@ -37,7 +37,7 @@ export default function HomeLayout() {
         }}
       />
       <Tabs.Screen
-        name="network"
+        name="friends"
         options={{
           title: 'Network',
             headerShown :false,
@@ -73,6 +73,15 @@ export default function HomeLayout() {
             headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="briefcase" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="DisplayUsers"
+        options={{
+          title: 'Profiles',
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="user" size={size} color={color} />
           ),
         }}
       />

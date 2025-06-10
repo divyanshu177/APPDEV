@@ -19,7 +19,8 @@ const {
 } = require('./controllers/SellerController');
 
 const {
-  sendFriendRequest, acceptFriendRequest, rejectFriendRequest, getFriendRequests
+  sendFriendRequest, acceptFriendRequest, rejectFriendRequest, getFriendRequests,
+  getFriends
 } = require('./controllers/friendController');
 
 const {
@@ -47,7 +48,7 @@ connectDb().then(() => {
 
 // Chat routes
 app.post('/login/sendMessage', isLoggedIn, sendMessage);
-app.get('/login/getMessages', isLoggedIn, getMessages);
+app.get('/login/getMessages/:friendId', isLoggedIn, getMessages);
 
 // Auth routes
 app.post('/register', register);
@@ -65,7 +66,7 @@ app.post('/login/sendFriendRequest', isLoggedIn, sendFriendRequest);
 app.post('/login/acceptFriendRequest', isLoggedIn, acceptFriendRequest);
 app.post('/login/rejectFriendRequest', isLoggedIn, rejectFriendRequest);
 app.get('/login/getFriendRequests', isLoggedIn, getFriendRequests);
-
+app.get('/login/getFriends', isLoggedIn, getFriends);
 // Post routes
 app.post('/login/createPost', isLoggedIn, createPost);
 app.put('/login/updatePost/:postId', isLoggedIn, updatePost);
