@@ -12,8 +12,7 @@ import {
 } from '@expo-google-fonts/poppins';
 
 const { width, height } = Dimensions.get('window');
-
-import logo from '../assets/images/b.jpg';
+import logo from '../assets/images/b.png';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -85,8 +84,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     marginBottom: 20,
   },
   title: {
@@ -110,3 +109,6 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
 });
+
+
+

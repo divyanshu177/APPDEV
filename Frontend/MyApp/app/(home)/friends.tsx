@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import axiosInstance from '../../app/axiosInstance';
+import axiosInstance from '../axiosInstance';
 
 type FriendRequest = {
   _id: string;

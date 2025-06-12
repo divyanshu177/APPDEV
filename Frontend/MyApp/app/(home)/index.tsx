@@ -10,10 +10,11 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import axiosInstance from '../../app/axiosInstance';
+import axiosInstance from '../axiosInstance';
 import { FontAwesome } from '@expo/vector-icons';
 
 type Post = {
+  dummysellerId: any;
   _id: string;
   image?: string;
   desc: string;
@@ -96,7 +97,7 @@ const HomePage = () => {
                 <Text style={styles.detailLabel}>sellerName:</Text>
                 <Text style={styles.detailValue}>{item.sellerId?.name || 'Unknown'}</Text>
               </View>
-             {item.dummyseller === 1 && item.dummysellerId && (
+             {item.dummysellerId === 1 && item.dummysellerId && (
   <View style={styles.detailsRow}>
     <Text style={styles.detailLabel}>dummyseller:</Text>
     <Text style={styles.detailValue}>
@@ -104,9 +105,6 @@ const HomePage = () => {
     </Text>
   </View>
 )}
-
-
-
 
               <View style={styles.detailsRow}>
                 <Text style={styles.detailLabel}>cost -</Text>
@@ -133,28 +131,30 @@ export default HomePage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f6fc',
+    backgroundColor: '#0f0f1a',
   },
   searchContainer: {
     flexDirection: 'row',
     margin: 16,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderRadius: 12,
     alignItems: 'center',
     paddingHorizontal: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#4c4cff55',
+    shadowColor: '#4c4cff',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: '#333',
+    color: '#fff',
   },
   searchButton: {
-    backgroundColor: '#007acc',
+    backgroundColor: '#4c4cff',
     padding: 10,
     borderRadius: 8,
   },
@@ -163,31 +163,35 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
-    shadowColor: '#4a90e2',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 4,
+    borderColor: '#4c4cff40',
+    borderWidth: 1,
+    shadowColor: '#4c4cff',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    elevation: 8,
   },
   postImage: {
     width: '100%',
     height: 180,
-    borderRadius: 12,
+    borderRadius: 14,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#4c4cff88',
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
-    color: '#003366',
+    color: '#ffffff',
     marginBottom: 6,
   },
   description: {
     fontSize: 14,
-    color: '#444',
+    color: '#cfcfcf',
     marginBottom: 12,
     lineHeight: 20,
   },
@@ -198,41 +202,43 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#003366',
+    color: '#9d9dff',
     marginRight: 6,
   },
   detailValue: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#0056b3',
+    color: '#ffffff',
   },
   referredText: {
     fontSize: 13,
     fontStyle: 'italic',
-    color: '#cc0066',
+    color: '#ffa3e0',
     marginTop: 4,
   },
   buyButton: {
     marginTop: 12,
-    backgroundColor: '#ff6b81',
-    paddingVertical: 10,
-    borderRadius: 10,
+    backgroundColor: '#7f00ff',
+    paddingVertical: 12,
+    borderRadius: 12,
     alignItems: 'center',
-    shadowColor: '#ff4d6d',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowColor: '#bb86fc',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.6,
+    shadowRadius: 6,
+    elevation: 6,
   },
   buyButtonText: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: 'bold',
     color: '#fff',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
   emptyText: {
     marginTop: 40,
     fontSize: 18,
-    color: '#888',
+    color: '#aaa',
     textAlign: 'center',
   },
 });

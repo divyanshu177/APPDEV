@@ -11,7 +11,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
-import axiosInstance from '../../app/axiosInstance';
+import axiosInstance from '../axiosInstance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 

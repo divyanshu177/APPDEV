@@ -10,7 +10,7 @@ import {
   StatusBar,
   TouchableOpacity,
 } from 'react-native';
-import axiosInstance from '../../app/axiosInstance';
+import axiosInstance from '../axiosInstance';
 
 export default function DisplayUsersScreen() {
   const [users, setUsers] = useState([]);
