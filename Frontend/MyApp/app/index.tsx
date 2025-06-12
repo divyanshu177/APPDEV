@@ -13,7 +13,8 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-import logo from '../assets/images/b.jpg';
+// @ts-ignore
+import logo from '../assets/images/Earnn .jpg';
 
 export default function HomeScreen() {
   const router = useRouter();

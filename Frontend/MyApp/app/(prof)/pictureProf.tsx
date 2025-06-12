@@ -11,16 +11,17 @@ export default function ProfileScreen() {
 
 const uploadImage = async (image) => {
   console.log("uploading");
-    const userString= await AsyncStorage.getItem('user');
-    const user=JSON.parse(userString);
-    const userId=user.id;
+    const userId= await AsyncStorage.getItem('userId');
+    // console.log(userId)
+    // const user=JSON.parse(userString);
+    // const userId=user.id;
 
     const formData = new FormData();
     formData.append('profilePicture', {
       uri: image.uri,
       name: `profile-${Date.now()}.jpg`,
       type: 'image/jpeg',
-    });
+    } as any);
     console.log(formData)
 
     try {

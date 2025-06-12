@@ -56,6 +56,8 @@ const userSchema = new mongoose.Schema({
     ref: 'Message',
   }],
 
-}, { timestamps: true });
+}, 
+{ timestamps: true }
+);
 
 module.exports = mongoose.model('User', userSchema);

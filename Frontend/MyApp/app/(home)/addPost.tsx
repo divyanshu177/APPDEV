@@ -70,7 +70,7 @@ export default function AddPostScreen() {
       const token = await AsyncStorage.getItem('userToken');
 
       const response = await axios.post(
-        'http://10.70.13.161:3000/login/createPost',
+        'http://10.61.51.179:3000/login/createPost',
         payload,
         {
           headers: {
@@ -91,29 +91,7 @@ export default function AddPostScreen() {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Create Post</Text>
 
-      {(Object.keys(formData) as (keyof FormData)[]).map((key) => (
-        <TextInput
-          key={key}
-          style={styles.input}
-          placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-          placeholderTextColor="#66788a"
-          value={formData[key]}
-          keyboardType={key === 'dummySeller' ? 'numeric' : 'default'}
-          onChangeText={(text) => handleChange(key, text)}
-        />
-      ))}
-
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Create Post</Text>
-      </TouchableOpacity>
-
-      {/* Navigate to Update Post using router.push */}
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: '#28a745', marginTop: 12 }]}
-        onPress={() => router.push('/updatePost')}
-      >
-        <Text style={styles.buttonText}>Go to Update Post</Text>
-      </TouchableOpacity>
+      
     </ScrollView>
   );
 }

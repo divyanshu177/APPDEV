@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   View,
   Text,
@@ -8,20 +8,22 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
 } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import axiosInstance from '../axiosInstance';
-import { useRouter } from 'expo-router';
-const router = useRouter();
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { io } from 'socket.io-client';
 
+const socket = io("http://10.61.89.72:3000", {
+  transports: ['websocket'], // optional but recommended
+});
 
 type Message = {
-  _id: string;
+  _id?: string;
   sender: string;
   receiver: string;
   content: string;
-  timestamp: string;
+  timestamp?: string;
 };
 
 export default function ChatScreen() {
@@ -29,40 +31,79 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const flatListRef = useRef<FlatList>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const router = useRouter();
 
-  const getMessages = async () => {
-    try {
-      const res = await axiosInstance.get(`/login/getMessages/${friendId}`);
-      console.log("Friend ID:", friendId);
-
-      setMessages(res.data.messages || []);
-    } catch (error) {
-      console.error('Failed to load messages', error);
-    }
-  };
   useEffect(() => {
-  console.log("Updated messages:", messages);
-}, [messages]);
+    const fetchUserId = async () => {
+      const storedId = await AsyncStorage.getItem('userId');
+      console.log('Fetched userId:', storedId);
+      setUserId(storedId);
+    };
+    fetchUserId();
+  }, []);
 
+  useEffect(() => {
+    if (!userId) return;
+
+    const getMessages = async () => {
+      try {
+        const res = await axiosInstance.get(`/login/getMessages/${friendId}`);
+        setMessages(res.data.messages || []);
+      } catch (error) {
+        console.error('Failed to load messages', error);
+      }
+    };
+
+    getMessages();
+
+    socket.emit('joinRoom', { userId });
+
+    socket.on('receiveMessage', (message: Message) => {
+      if (message.sender === friendId) {
+        setMessages((prev) => [message, ...prev]);
+      }
+    });
+
+    return () => {
+      socket.off('receiveMessage');
+    };
+  }, [userId]);
 
   const sendMessage = async () => {
-    if (!newMessage.trim()) return;
+
+    if (!newMessage.trim() || !userId) return;
+    const friendIdStr = String(friendId);
+    const userIdStr = String(userId);
 
     try {
+      console.log('Sending:', { senderId: userId, receiverId: friendId, content: newMessage });
+
       await axiosInstance.post('/login/sendMessage', {
         receiverId: friendId,
         content: newMessage,
       });
+
+      socket.emit('sendMessage', {
+        senderId: userId,
+        receiverId: friendId,
+        content: newMessage,
+      });
+
+      setMessages((prev) => [
+        {
+          sender: userId,
+          receiver: friendId as string,
+          content: newMessage,
+        },
+        ...prev,
+      ]);
+
       setNewMessage('');
-      getMessages();
     } catch (err) {
       console.error('Failed to send message', err);
     }
   };
-
-  useEffect(() => {
-    getMessages();
-  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -70,33 +111,36 @@ export default function ChatScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={80}
     >
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-  <Text style={styles.backButtonText}>← </Text>
-</TouchableOpacity>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/(home)/friends')}>
+        <Text style={styles.backButtonText}>←</Text>
+      </TouchableOpacity>
 
       <Text style={styles.header}>Chat with {friendName}</Text>
 
-    <FlatList
-  ref={flatListRef}
-  data={messages}
-  inverted
-  keyExtractor={(item) => item._id}
-  renderItem={({ item }) => {
-    const isSender = item.sender !== friendId;
-    return (
-      <View
-        style={[
-          styles.messageContainer,
-          isSender ? styles.sender : styles.receiver,
-        ]}
-      >
-        <Text style={styles.messageText}>{item.content}</Text>
-      </View>
-    );
-  }}
-  contentContainerStyle={{ paddingBottom: 10 }}
-  
-/>
+      {userId ? (
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          inverted
+          keyExtractor={(item, index) => item._id || index.toString()}
+          renderItem={({ item }) => {
+            const isSender = item.sender === userId;
+            return (
+              <View
+                style={[
+                  styles.messageContainer,
+                  isSender ? styles.sender : styles.receiver,
+                ]}
+              >
+                <Text style={styles.messageText}>{item.content}</Text>
+              </View>
+            );
+          }}
+          contentContainerStyle={{ paddingBottom: 10 }}
+        />
+      ) : (
+        <Text style={{ color: '#fff', textAlign: 'center' }}>Loading messages...</Text>
+      )}
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -174,18 +218,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   backButton: {
-  paddingVertical: 6,
-  paddingHorizontal: 12,
-  alignSelf: 'flex-start',
-  backgroundColor: '#FEE1B6',
-  borderRadius: 6,
-  marginBottom: 8,
-},
-backButtonText: {
-  color: '#2F2F2F',
-  fontWeight: '600',
-  fontSize: 16,
-},
-
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    alignSelf: 'flex-start',
+    backgroundColor: '#FEE1B6',
+    borderRadius: 6,
+    marginBottom: 8,
+  },
+  backButtonText: {
+    color: '#2F2F2F',
+    fontWeight: '600',
+    fontSize: 16,
+  },
 });
-

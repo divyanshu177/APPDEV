@@ -4,7 +4,7 @@ import * as Animatable from 'react-native-animatable';
 import { router } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native'; // Use this for navigation
+import { useNavigation } from '@react-navigation/native'; 
 
 
 const Login = () => {
@@ -13,16 +13,19 @@ const Login = () => {
   const navigation = useNavigation();
   
   const handleLogin = () => {
-    axios.post('http://10.81.16.78:3000/login', { email, password })
+    axios.post('http://10.61.89.72:3000/login', { email, password })
       .then(async (response) => {
-        const { token, user } = response.data; // expect backend sends user info here
+        const { token, user } = response.data; 
+        console.log(user)
 
 
         if (token) {
           await AsyncStorage.setItem('userToken', token);
           console.log('Token stored successfully:', token);
-          router.replace('/(home)'); // Navigate to home on success
+          router.replace('/(home)'); 
         }
+         await AsyncStorage.setItem('userId',user.id);
+          console.log('User ID stored successfully:', user.id);
         console.log('Login successful:', response.data);
       })
       

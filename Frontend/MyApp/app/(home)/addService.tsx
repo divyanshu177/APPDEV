@@ -27,8 +27,7 @@ interface FormData {
   sellerSharePercent: number;
 }
 
-export default function AddServiceScreen() {
-   const router = useRouter();
+
    
      
    

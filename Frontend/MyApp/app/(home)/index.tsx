@@ -11,10 +11,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import axiosInstance from '../../app/axiosInstance';
-import { FontAwesome } from '@expo/vector-icons';
-import {useRouter} from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 type Post = {
   _id: string;
@@ -23,18 +21,20 @@ type Post = {
   cost: number;
   serviceId?: { name?: string };
   sellerId?: { name?: string };
+  dummyseller?: number;
+  dummysellerId?: { name?: string; _id?: string };
 };
 
 const HomePage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
 
   const fetchAllPosts = async () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get('/login/displayPost');
-      console.log(response);
       setPosts(response.data.posts);
     } catch {
       setPosts([]);
@@ -43,25 +43,21 @@ const HomePage = () => {
     }
   };
 
-const getProfile = async() =>{
-    const router=useRouter();
+  const getProfile = () => {
     router.replace('/(prof)/profile');
-  }
- 
+  };
 
-const searchPosts = async () => {
-  console.log("reached serchpost");
+  const searchPosts = async () => {
     if (!searchQuery.trim()) {
       fetchAllPosts();
       return;
     }
-    
+
     setLoading(true);
     try {
       const response = await axiosInstance.get('/login/searchPost', {
         params: { serviceName: searchQuery.trim() },
       });
-      console.log(response.data);
       setPosts(response.data.posts);
     } catch {
       setPosts([]);
@@ -76,23 +72,23 @@ const searchPosts = async () => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <View style={styles.searchContainer}>
-  <TouchableOpacity style={styles.iconButton} onPress={getProfile}>
-    <Ionicons name="person-circle-outline" size={28} color="#333" />
-  </TouchableOpacity>
+      <View style={styles.searchContainer}>
+        <TouchableOpacity style={styles.iconButton} onPress={getProfile}>
+          <Ionicons name="person-circle-outline" size={28} color="#333" />
+        </TouchableOpacity>
 
-  <TextInput
-    style={styles.searchInput}
-    placeholder="Search services..."
-    value={searchQuery}
-    onChangeText={setSearchQuery}
-    placeholderTextColor="#666"
-  />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search services..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholderTextColor="#666"
+        />
 
-  <TouchableOpacity onPress={searchPosts} style={styles.searchButton}>
-    <FontAwesome name="search" size={20} color="#fff" />
-  </TouchableOpacity>
-</View>
+        <TouchableOpacity onPress={searchPosts} style={styles.searchButton}>
+          <FontAwesome name="search" size={20} color="#fff" />
+        </TouchableOpacity>
+      </View>
 
       {loading ? (
         <ActivityIndicator size="large" color="#007acc" />
@@ -113,17 +109,15 @@ const searchPosts = async () => {
                 <Text style={styles.detailLabel}>sellerName:</Text>
                 <Text style={styles.detailValue}>{item.sellerId?.name || 'Unknown'}</Text>
               </View>
-             {item.dummyseller === 1 && item.dummysellerId && (
-  <View style={styles.detailsRow}>
-    <Text style={styles.detailLabel}>dummyseller:</Text>
-    <Text style={styles.detailValue}>
-      {item.dummysellerId?.name || item.dummysellerId?._id || 'Unknown'}
-    </Text>
-  </View>
-)}
 
-
-
+              {item.dummyseller === 1 && item.dummysellerId && (
+                <View style={styles.detailsRow}>
+                  <Text style={styles.detailLabel}>dummyseller:</Text>
+                  <Text style={styles.detailValue}>
+                    {item.dummysellerId.name || item.dummysellerId._id || 'Unknown'}
+                  </Text>
+                </View>
+              )}
 
               <View style={styles.detailsRow}>
                 <Text style={styles.detailLabel}>cost -</Text>
@@ -134,9 +128,16 @@ const searchPosts = async () => {
                 <Text style={styles.referredText}>Referred by: dummyseller</Text>
               )}
 
-              <TouchableOpacity style={styles.buyButton}>
-                <Text style={styles.buyButtonText}>Buy Now</Text>
-              </TouchableOpacity>
+             <TouchableOpacity
+  style={[styles.buyButton, { marginTop: 12 }]}
+ onPress={() => router.push({
+  pathname: '/(prof)/PaymentScreen',
+  params: { cost: item.cost }
+})}
+>
+  <Text style={styles.buyButtonText}>BUY NOW</Text>
+</TouchableOpacity>
+
             </View>
           ))}
         </ScrollView>
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    gap: 10, // spacing between items (if using newer RN versions)
+    gap: 10,
     backgroundColor: '#fff',
   },
   iconButton: {
@@ -236,8 +237,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   buyButton: {
-    marginTop: 12,
-    backgroundColor: '#ff6b81',
+    backgroundColor: '#ff6600',
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: 'center',
@@ -258,5 +258,4 @@ const styles = StyleSheet.create({
     color: '#888',
     textAlign: 'center',
   },
-
 });
