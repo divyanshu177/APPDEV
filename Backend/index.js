@@ -32,7 +32,7 @@ const {
 
 const { sendMessage, getMessages } = require('./controllers/chatController');
 
-const { createPaymentLink } = require('./controllers/payController');
+const { createPaymentLink,storeOrders,paymentSuccess,getOrders} = require('./controllers/payController');
 
 
 const app = express();
@@ -108,9 +108,9 @@ app.post('/login/updateProfilePicture/:id', upload.single('profilePicture'), upl
 
 
 app.post('/createPaymentLink', createPaymentLink);
-//app.post('/login/paymentSuccess',isLoggedIn,paymentSuccess);
-//app.post('/login/storeOrders',isLoggedIn,storeOrders);
-//app.get('/login/getOrders',isLoggedIn,getOrders);
+app.post('/login/paymentSuccess',isLoggedIn,paymentSuccess);
+app.post('/login/storeOrders',isLoggedIn,storeOrders);
+app.get('/login/getOrders',isLoggedIn,getOrders);
 
 
 
