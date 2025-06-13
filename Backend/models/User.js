@@ -55,6 +55,10 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Message',
   }],
+  //orders:[{
+  // type:mongoose.Schema.Types.ObjectId,
+  //ref:'service',
+  // }],
 
 }, 
 { timestamps: true }

@@ -20,7 +20,7 @@ type Post = {
   desc: string;
   cost: number;
   serviceId?: { name?: string };
-  sellerId?: { name?: string };
+  sellerId?: { name?: string; _id?: string };
   dummyseller?: number;
   dummysellerId?: { name?: string; _id?: string };
 };
@@ -132,7 +132,12 @@ const HomePage = () => {
   style={[styles.buyButton, { marginTop: 12 }]}
  onPress={() => router.push({
   pathname: '/(prof)/PaymentScreen',
-  params: { cost: item.cost }
+  params: { 
+    sellerId: item.sellerId?._id || '', 
+    dummySellerId: item.dummysellerId?._id || '', 
+    serviceId: item.serviceId?.name || '', 
+    fee: item.cost 
+  }
 })}
 >
   <Text style={styles.buyButtonText}>BUY NOW</Text>
