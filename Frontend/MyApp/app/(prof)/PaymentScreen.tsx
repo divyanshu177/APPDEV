@@ -13,7 +13,7 @@ export default function PaymentScreen() {
       
   const handlePayment = async () => {
     try {
-     const { data } = await axios.post('http://10.61.89.72:3000/login/createPaymentLink', {
+     const { data } = await axios.post('http://10.61.4.86:3000/login/createPaymentLink', {
         amount: fee.fee, 
         name: 'Test User',
         email: 'bt23cse006@nituk.com',
