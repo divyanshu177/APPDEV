@@ -1,10 +1,6 @@
 const User = require('../models/User');
 const Post = require('../models/post');
 const Service = require('../models/service');
-
-
-
-
 const createPost = async (req, res) => {
     try {
         const {sellerId, serviceId, desc,image ,dummySeller,serviceName} = req.body;

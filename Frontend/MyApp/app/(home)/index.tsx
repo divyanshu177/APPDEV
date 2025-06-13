@@ -15,7 +15,7 @@ type Post = {
   desc: string;
   cost: number;
   serviceId?: { name?: string };
-  sellerId?: { name?: string };
+  sellerId?: { name?: string; _id?: string };
 };
 
 const HomePage = () => {
@@ -90,9 +90,14 @@ const HomePage = () => {
                 <Text style={styles.description}>{item.desc}</Text>
 
                 <View style={styles.detailsRow}>
-                  <Text style={styles.detailLabel}>sellerName:</Text>
-                  <Text style={styles.detailValue}>{item.sellerId?.name || 'Unknown'}</Text>
-                </View>
+  <Text style={styles.detailLabel}>sellerName:</Text>
+  <TouchableOpacity onPress={() => router.push(`/(prof)/user/${item.sellerId?._id}`)}>
+    <Text style={[styles.detailValue, styles.linkText]}>
+      {item.sellerId?.name || 'Unknown'}
+    </Text>
+  </TouchableOpacity>
+</View>
+
 
                 {item.dummysellerId === 1 && item.dummysellerId && (
                   <View style={styles.detailsRow}>
@@ -177,4 +182,5 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase', letterSpacing: 1
   },
   emptyText: { marginTop: 40, fontSize: 18, color: '#aaa', textAlign: 'center' },
+  linkText: { color: '#60a5fa', textDecorationLine: 'underline' },
 });

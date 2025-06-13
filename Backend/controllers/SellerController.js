@@ -17,11 +17,7 @@ const addService = async (req, res) => {
     
       dummysellerSharePercent,
       sellerSharePercent
-    } = req.body;
-
-    // Validate required fields
-
-      
+    } = req.body;  
     const newService = new Service({    
       name,
       stock,
@@ -83,8 +79,6 @@ const displayServices = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
-
-
 
 const updateService = async (req, res) => {
   try {
