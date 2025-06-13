@@ -32,7 +32,7 @@ const {
 
 const { sendMessage, getMessages } = require('./controllers/chatController');
 
-const { createPaymentLink,paymentSuccess,storeOrders,getOrders } = require('./controllers/payController');
+const { createPaymentLink } = require('./controllers/payController');
 
 
 const app = express();
@@ -68,7 +68,7 @@ io.on('connection', (socket) => {
     console.log('User disconnected:', socket.id);
   });
 });
-
+app.post('/login/createPaymentLink',createPaymentLink);
 
 app.post('/login/sendMessage', isLoggedIn, sendMessage);
 app.get('/login/getMessages/:friendId', isLoggedIn, getMessages);
@@ -107,7 +107,7 @@ app.get('/login/getAllUsers', isLoggedIn, getAllUsers);
 app.post('/login/updateProfilePicture/:id', upload.single('profilePicture'), uploadProfile);
 
 
-app.post('login/createPaymentLink',createPaymentLink);
+
 //app.post('/login/paymentSuccess',isLoggedIn,paymentSuccess);
 //app.post('/login/storeOrders',isLoggedIn,storeOrders);
 //app.get('/login/getOrders',isLoggedIn,getOrders);

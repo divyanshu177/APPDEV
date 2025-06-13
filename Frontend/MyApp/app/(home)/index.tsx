@@ -133,9 +133,6 @@ const HomePage = () => {
  onPress={() => router.push({
   pathname: '/(prof)/PaymentScreen',
   params: { 
-    sellerId: item.sellerId?._id || '', 
-    dummySellerId: item.dummysellerId?._id || '', 
-    serviceId: item.serviceId?.name || '', 
     fee: item.cost 
   }
 })}
