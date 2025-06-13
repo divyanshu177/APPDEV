@@ -108,6 +108,10 @@ app.post('/login/updateProfilePicture/:id', upload.single('profilePicture'), upl
 
 
 app.post('/createPaymentLink', createPaymentLink);
+//app.post('/login/paymentSuccess',isLoggedIn,paymentSuccess);
+//app.post('/login/storeOrders',isLoggedIn,storeOrders);
+//app.get('/login/getOrders',isLoggedIn,getOrders);
+
 
 
 const PORT = 3000;
