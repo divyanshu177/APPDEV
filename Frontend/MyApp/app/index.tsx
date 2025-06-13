@@ -37,6 +37,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {/* Background Video */}
       <Video
+      
         source={{ uri: 'https://cdn.pixabay.com/video/2024/04/15/208082_large.mp4' }}
         rate={1.0}
         volume={1.0}

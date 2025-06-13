@@ -70,7 +70,7 @@ export default function AddPostScreen() {
       const token = await AsyncStorage.getItem('userToken');
 
       const response = await axios.post(
-        'http://10.61.91.25:3000/login/createPost',
+        'http://10.61.4.86:3000/login/createPost',
         payload,
         {
           headers: {
@@ -108,12 +108,19 @@ export default function AddPostScreen() {
       </TouchableOpacity>
 
       {/* Navigate to Update Post using router.push */}
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: '#28a745', marginTop: 12 }]}
-        onPress={() => router.push('/updatePost')}
-      >
-        <Text style={styles.buttonText}>Go to Update Post</Text>
-      </TouchableOpacity>
+     <TouchableOpacity
+  style={[styles.button, {
+    backgroundColor: '#EEDEF6', // pastel neon purple
+    shadowColor: '#EEDEF6',
+    marginTop: 12,
+  }]}
+  onPress={() => router.push('/updatePost')}
+>
+  <Text style={[styles.buttonText, { color: '#2F2F2F' }]}>
+    Go to Update Post
+  </Text>
+</TouchableOpacity>
+
     </ScrollView>
   );
 }
@@ -121,40 +128,47 @@ export default function AddPostScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e6f0fa',
+    backgroundColor: '#1A1A1A',
     padding: 16,
   },
   title: {
     fontSize: 26,
     fontWeight: '700',
-    color: '#2a3f5f',
+    color: '#FEE1B6',
     textAlign: 'center',
     marginBottom: 20,
+    textShadowColor: '#FEE1B6AA',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 6,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#cddff6',
-    backgroundColor: '#f4f8ff',
+    borderColor: '#444',
+    backgroundColor: '#2F2F2F',
     padding: 14,
     borderRadius: 12,
     marginBottom: 14,
-    color: '#1f2d3d',
+    color: '#F0F0F0',
     fontSize: 15,
+    shadowColor: '#FEE1B6',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   button: {
-    backgroundColor: '#007acc',
+    backgroundColor: '#FEE1B6',
     paddingVertical: 15,
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 10,
-    shadowColor: '#007acc',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
+    shadowColor: '#FEE1B6',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
     shadowRadius: 6,
     elevation: 4,
   },
   buttonText: {
-    color: '#ffffff',
+    color: '#2F2F2F',
     fontWeight: '700',
     fontSize: 16,
   },

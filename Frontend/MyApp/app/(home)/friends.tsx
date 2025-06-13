@@ -149,37 +149,43 @@ export default function FriendRequestsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#2F2F2F',
+    backgroundColor: '#0A0A0A', // Deep black background
     padding: 16,
   },
   center: {
     flex: 1,
-    backgroundColor: '#2F2F2F',
+    backgroundColor: '#0A0A0A',
     justifyContent: 'center',
     alignItems: 'center',
   },
   heading: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#FEE1B6',
+    color: '#B084FF', // Soft neon purple
     marginVertical: 12,
   },
   card: {
-    backgroundColor: '#CCE5E3',
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 12,
+    backgroundColor: '#1A1A1D', // Dark card base
+    padding: 16,
+    borderRadius: 14,
+    marginBottom: 14,
     borderWidth: 1,
-    borderColor: '#FEE1B6',
+    borderColor: '#B084FF', // Neon purple border
+    shadowColor: '#B084FF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 10,
   },
   name: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#2F2F2F',
+    fontWeight: '700',
+    color: '#EDEDED',
   },
   email: {
     fontSize: 14,
-    color: '#444',
+    color: '#AAAAAA',
+    marginBottom: 6,
   },
   buttonRow: {
     flexDirection: 'row',
@@ -187,27 +193,38 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   acceptButton: {
-    backgroundColor: '#FEE1B6',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 6,
+    backgroundColor: '#2EE5AC', // Soft neon green
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    shadowColor: '#2EE5AC',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    elevation: 5,
   },
   rejectButton: {
-    backgroundColor: '#EEDEF6',
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 6,
+    backgroundColor: '#FF5C8A', // Neon pink
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    shadowColor: '#FF5C8A',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 6,
+    elevation: 5,
   },
   buttonText: {
-    color: '#2F2F2F',
-    fontWeight: '600',
+    color: '#0A0A0A',
+    fontWeight: '700',
+    fontSize: 14,
   },
   error: {
-    color: '#FEE1B6',
+    color: '#FF4D4F',
     fontSize: 16,
   },
   emptyText: {
-    color: '#EEDEF6',
+    color: '#888',
     fontSize: 14,
     textAlign: 'center',
     marginTop: 10,
@@ -220,22 +237,24 @@ const styles = StyleSheet.create({
   separatorLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#FEE1B6',
+    backgroundColor: '#444', // Subtle separator
     marginRight: 8,
   },
   chatButton: {
-  backgroundColor: '#FEE1B6',
-  paddingVertical: 6,
-  paddingHorizontal: 12,
-  borderRadius: 6,
-  marginTop: 0,
-
-  left: '90%',
-  alignSelf: 'flex-start',
-},
-chatButtonText: {
-  color: '#2F2F2F',
-  fontWeight: '600',
-},
-
+    backgroundColor: '#7F5FFF', // Neon blue-violet
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignSelf: 'flex-end',
+    marginTop: 6,
+    shadowColor: '#7F5FFF',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  chatButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
 });

@@ -1,31 +1,34 @@
-// import { Tabs } from 'expo-router';
-
-// export default function HomeLayout() {
-//   return (
-//     <Tabs>
-//       <Tabs.Screen name="index" options={{ title: 'Home' }} />
-//       <Tabs.Screen name="network" options={{ title: 'Network' }} />
-//       <Tabs.Screen name="addPost" options={{ title: 'Add Post' }} />
-//       <Tabs.Screen name="notification" options={{ title: 'Notification' }} />
-//       <Tabs.Screen name="addService" options={{ title: 'Add Service' }} />
-//     </Tabs>
-//   );
-// }
-
 import { FontAwesome } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
 export default function HomeLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: '#FEE1B6',
-        tabBarStyle: {
-          backgroundColor: '#2F2F2F',
-        },
-      }}
-    >
+<Tabs
+  screenOptions={{
+    headerShown: false,
+    tabBarActiveTintColor: '#FEE1B6',
+    tabBarInactiveTintColor: '#888',
+    tabBarStyle: {
+      backgroundColor: '#1A1A1A',
+      borderTopWidth: 0,
+      paddingVertical: 8,
+      paddingBottom: 12,
+    },
+    tabBarLabelStyle: {
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    tabBarItemStyle: {
+    },
+    tabBarIconStyle: {
+      shadowColor: '#FEE1B6',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+    },
+  }}
+>
+
       <Tabs.Screen
         name="index"
         options={{
