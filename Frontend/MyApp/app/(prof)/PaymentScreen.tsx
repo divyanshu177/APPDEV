@@ -3,29 +3,66 @@ import { View, Button, Modal, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
+import axiosInstance from '../axiosInstance';
 
 
 export default function PaymentScreen() {
   const [paymentUrl, setPaymentUrl] = useState(null);
- const params = useLocalSearchParams();
-      console.log(params)
-      const fee=params;  
-       console.log(fee);
+  const { cost, sellerId, serviceId, dummySellerId } = useLocalSearchParams();
+  console.log(sellerId)
+  console.log("dummySellerId",dummySellerId)
+  
+
+
   const handlePayment = async () => {
     try {
-     const { data } = await axios.post('http://10.61.89.72:3000/createPaymentLink', {
-        amount: {fee}, 
+      console.log("handling payment")
+     const { data } = await axiosInstance.post('/createPaymentLink', {
+        amount: Number(cost), 
         name: 'Test User',
         email: 'bt23cse006@nituk.com',
         contact: '9027065493',
       });
 
       setPaymentUrl(data.url); 
-    } catch (err) {
+    }
+    catch (err) {
       console.log('Error creating payment link:', err);
     }
-  };
 
+    try{  
+      console.log(sellerId);
+    await axiosInstance.post('/login/paymentSuccess',{
+      sellerId: sellerId,
+      cost: Number(cost), 
+      dummySellerId: dummySellerId,  
+      serviceId: serviceId
+  },{
+    headers: {
+        'Content-Type': 'application/json'
+    }
+});
+    }
+    catch(err){
+      console.log('error in updating wallet');
+    }
+
+    try{
+        await axiosInstance.post('/login/storeOrders',{
+           serviceId:serviceId
+        },{
+    headers: {
+        'Content-Type': 'application/json'
+    }
+      });
+    }
+    catch(err){
+        console.log("error in storing error",err);
+
+      }
+
+
+    }
   return (
     <View style={{ flex: 1 }}>
       <Button title="Pay with Razorpay" onPress={handlePayment} />
@@ -48,5 +85,5 @@ export default function PaymentScreen() {
         )}
       </Modal>
     </View>
-  );
-}
+    );
+  }
