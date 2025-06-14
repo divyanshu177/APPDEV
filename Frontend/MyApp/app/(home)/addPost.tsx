@@ -20,40 +20,21 @@ export default function ServicesScreen() {
     fetchServices();
   }, []);
 
-  const handleAddPost = async (item) => {
-    const id=await AsyncStorage.getItem('userId');
-    console.log(id);
-    
-    const payload = {
-      serviceId: item._id,
-      sellerId: item.seller,          
-      desc: item.description,         
-      image: item.image,
-      dummySellerId:id, 
-      serviceName: item.name          
-    };
+ 
 
-    try {
-      console.log("sending request")
-      console.log(payload);
-      const response = await axiosInstance.post('/login/createPost', payload);
-      Alert.alert('Success', 'Post added successfully');
-      console.log('Response:', response.data);
-    } catch (error) {
-      console.error('Error adding post:', error);
-      Alert.alert('Error', 'Failed to add post');
-    }
-  };
+  const create= async(item) =>{
+     router.push({
+      pathname:"/createPost",
+      params:item
 
-  const create= () =>{
-     router.replace("/createPost");
+  });
   }
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
       <Text style={styles.price}>₹{item.originalPrice}</Text>
-      <Button title="Add Post" onPress={() => handleAddPost(item) } />
+      <Button title="Add Post" onPress={ () =>create(item) } />
     </View>
   );
 

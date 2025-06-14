@@ -7,7 +7,7 @@ const Service = require('../models/service');
 
 const createPost = async (req, res) => {
     try {
-        const {sellerId, serviceId, desc,image ,dummySellerId,serviceName} = req.body;
+        const {sellerId, serviceId, desc,image ,dummySellerId,serviceName,review} = req.body;
         console.log("creating post");
         const service = await Service.findById(serviceId);
  
@@ -47,7 +47,8 @@ const createPost = async (req, res) => {
           serviceName: serviceName,
           dummyseller: dummySeller,
           dummysellerId: dummySellerId,
-          referredAt: new Date()
+          referredAt: new Date(),
+          ...(review && { review })
     });
 
         await newPost.save();
