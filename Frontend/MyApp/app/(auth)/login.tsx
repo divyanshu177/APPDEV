@@ -13,7 +13,7 @@ const Login = () => {
   const navigation = useNavigation();
   
   const handleLogin = () => {
-    axios.post('http://10.81.18.222:3000/login', { email, password })
+    axios.post('http://10.61.89.72:3000/login', { email, password })
       .then(async (response) => {
         const { token, user } = response.data; 
         console.log(user)

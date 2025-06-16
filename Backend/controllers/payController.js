@@ -29,7 +29,7 @@ const createPaymentLink = async (req, res) => {
         sms: true,
         email: true,
       },
-      callback_url: 'http://10.81.18.222:3000/payment-success', 
+      callback_url: 'http://10.61.89.72:3000/payment-success', 
       callback_method: 'get',
     };
 
