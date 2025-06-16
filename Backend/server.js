@@ -8,6 +8,7 @@ const isLoggedIn = require('./middlewares/isLoggedIn');
 const isAuthorized = require('./middlewares/isAuthorized');
 const socket = require('./socket'); // ✅ import socket.js
 const upload = require('./middlewares/upload');
+
 const { Server } = require('socket.io');
 
 
@@ -22,7 +23,7 @@ const {
   getFriends
 } = require('./controllers/friendController');
 const {
-  createPost, updatePost, removePost, displayPost, getPost, getMyPosts,getPostByUser
+  createPost, updatePost, removePost, displayPost, getPost, getMyPosts,getPostByUser,uploadImages
 } = require('./controllers/PostController');
 const {
   searchUser, searchPost, getProfile, getAllUsers, viewUserProfile, uploadProfile
@@ -87,6 +88,10 @@ app.delete('/login/removePost/:postId', isLoggedIn, removePost);
 app.get('/login/getPost/:postId', isLoggedIn, getPost);
 app.get('/login/getMyPosts', isLoggedIn, getMyPosts);
 app.post('/login/getPostByUser', isLoggedIn, getPostByUser);
+
+
+app.post('/login/uploadImages', isLoggedIn, upload.array('images', 5), uploadImages);
+
 
 // Routes — Users
 

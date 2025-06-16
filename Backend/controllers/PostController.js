@@ -1,16 +1,19 @@
 const User = require('../models/User');
 const Post = require('../models/post');
 const Service = require('../models/service');
+
 const createPost = async (req, res) => {
     try {
         const {sellerId, serviceId, desc,image ,dummySellerId,review} = req.body;
         console.log("creating post");
         const service = await Service.findById(serviceId);
-        const serviceName= service.name;
+       
  
         if (!service) {
             return res.status(404).json({ message: "Service not found" });
         }
+
+         const serviceName= service.name;
        
         let dummySeller=0;
 
@@ -21,7 +24,6 @@ const createPost = async (req, res) => {
         let costo =0;
         
 
-        console.log("Dummy Sellerid:", dummySellerId);
 
         if (!service) {
             return res.status(404).json({ message: "Service not found" });
@@ -169,7 +171,20 @@ const getPostByUser = async (req, res) => {
   }
 };
 
+const uploadImages = (req, res) => {
+  try {
+    console.log("uploading imagesss")
+    const imageUrls = req.files.map(file => {
+      return `http://10.61.89.72:5000/uploads/${file.filename}`;
+    });
 
+    console.log("Image URLs:", imageUrls);
+    res.status(200).json({ success: true, imageUrls });
+  } catch (error) {
+    console.error('Error uploading images:', error);
+    res.status(500).json({ success: false, message: 'Image upload failed.' });
+  }
+};
 
 module.exports = {
     createPost,
@@ -178,6 +193,6 @@ module.exports = {
     getPost,
     getMyPosts,
     displayPost,
-    getPostByUser
-
+    getPostByUser,
+    uploadImages 
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Alert, Image,
+  View, Text, TextInput, TouchableOpacity, Image,
+  StyleSheet, ScrollView, Alert
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,7 +13,7 @@ interface FormData {
   stock: number;
   description: string;
   category: string;
-  image: string[]; // Fixed: should be an array
+  image: string[]; // holds image URLs
   originalPrice: number;
   reducedPrice: number;
   dummysellerSharePercent: number;
@@ -21,19 +22,19 @@ interface FormData {
 
 export default function AddServiceScreen() {
   const router = useRouter();
+  const [localImageUri, setLocalImageUri] = useState<string[]>([]);
+
   const [formData, setFormData] = useState<FormData>({
     name: '',
     stock: 0,
     description: '',
     category: '',
-    image: [], // Fixed here
+    image: [],
     originalPrice: 0,
     reducedPrice: 0,
     dummysellerSharePercent: 10,
     sellerSharePercent: 90,
   });
-
-  const [localImageUri, setLocalImageUri] = useState<string | null>(null);
 
   const handleChange = (key: keyof FormData, value: string) => {
     const numberFields: (keyof FormData)[] = [
@@ -46,6 +47,7 @@ export default function AddServiceScreen() {
   };
 
   const pickImage = async () => {
+    console.log("picking image");
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permissionResult.granted) {
       Alert.alert("Permission Required", "Permission to access camera roll is required!");
@@ -57,38 +59,37 @@ export default function AddServiceScreen() {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0.7,
-      base64: false,
+      allowsMultipleSelection: true,
     });
 
-    if (!result.canceled && result.assets.length > 0) {
-      const asset = result.assets[0];
-      const uri = asset.uri;
-      setLocalImageUri(uri);
+    if (!result.canceled) {
+      const sellerId = await AsyncStorage.getItem('userId');
 
-      await uploadImage(uri); // Fixed: directly upload image
-    }
-  };
+      const formDataUpload = new FormData();
+      formDataUpload.append('sellerId', sellerId);
 
-  const uploadImage = async (uri: string) => {
-    const form = new FormData();
-    form.append('image', {
-      uri,
-      name: 'service.jpg',
-      type: 'image/jpeg',
-    } as any); // React Native specific FormData object
-
-    try {
-      const response = await axiosInstance.post('/upload', form, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      result.assets.forEach((asset, index) => {
+        formDataUpload.append('images', {
+          uri: asset.uri,
+          name: `post-${index}-${Date.now()}.jpg`,
+          type: 'image/jpeg',
+        } as any);
       });
 
-      const filename = response.data.filename;
-      setFormData((prev) => ({ ...prev, image: [...prev.image, filename] })); // Fixed: push filename into array
-    } catch (err) {
-      console.error("Upload error:", err);
-      Alert.alert("Upload Failed", "Unable to upload image.");
+      const response = await axiosInstance.post('/login/uploadImages', formDataUpload, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      const imageUrls = response.data.imageUrls; // Adjust this based on your backend response
+      console.log("Image URLs received:", imageUrls);
+
+
+      setFormData((prev) => ({
+        ...prev,
+        image: imageUrls, // setting URLs received from backend
+      }));
+
+      setLocalImageUri(result.assets.map((asset) => asset.uri)); // for local preview
     }
   };
 
@@ -108,34 +109,28 @@ export default function AddServiceScreen() {
   };
 
   const postDataCreate = (response) => {
-    console.log
-    return {   
-      image: response.data.image,
+    console.log("FormData just before creating post:", formData);
+
+    console.log("Service Created:", response.data);
+    return {
+      image: formData.image, // using the same images uploaded earlier
       desc: formData.description,
-      serviceId: response.serviceId,
-      sellerId: response.sellerId,
+      serviceId: response.data.service._id,
+      sellerId: response.data.service.seller,
     };
   };
 
   const handleSubmit = async (data) => {
     try {
-      console.log('Submitting data:', data);
+      console.log('Submitting service data:', data);
       const response = await axiosInstance.post('/login/addService', data);
-      const postData=postDataCreate(response);
-      Alert.alert('Service Added Successfully!');
-      console.log('Response:', response.data);
+      const postData = postDataCreate(response);
+      await axiosInstance.post('/login/createPost', postData);
+      Alert.alert('Success', 'Service and Post created successfully!');
+      console.log('Post creation response:', response.data);
     } catch (error: any) {
       console.error('Axios Error:', error.response?.data || error.message);
-      Alert.alert('Error', 'Failed to add service. Please try again.');
-    }
-
-    try{    
-      await axiosInstance.post('/login/createPost',postData);
-      console.log('Post created successfully');
-    }
-    catch (error) {
-      console.error('Error creating post:', error);
-      Alert.alert('Error', 'Failed to create post. Please try again.');
+      Alert.alert('Error', 'Failed to add service or post. Please try again.');
     }
   };
 
@@ -144,7 +139,7 @@ export default function AddServiceScreen() {
       <Text style={styles.title}>Add New Service</Text>
 
       {Object.keys(formData).map((key, index) => {
-        if (key === 'image') return null; // Don't render input for image array
+        if (key === 'image') return null; // Skip image field rendering
         return (
           <TextInput
             key={index}
@@ -162,11 +157,21 @@ export default function AddServiceScreen() {
       })}
 
       <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-        <Text style={styles.uploadText}>{localImageUri ? 'Change Image' : 'Upload Image'}</Text>
+        <Text style={styles.uploadText}>
+          {localImageUri.length > 0 ? 'Change Image' : 'Upload Image'}
+        </Text>
       </TouchableOpacity>
 
-      {localImageUri && (
-        <Image source={{ uri: localImageUri }} style={styles.imagePreview} />
+      {localImageUri.length > 0 && (
+        <ScrollView horizontal style={{ marginBottom: 20 }}>
+          {localImageUri.map((uri, index) => (
+            <Image
+              key={index}
+              source={{ uri }}
+              style={[styles.imagePreview, { width: 200, height: 200, marginRight: 10 }]}
+            />
+          ))}
+        </ScrollView>
       )}
 
       <TouchableOpacity
@@ -177,8 +182,6 @@ export default function AddServiceScreen() {
         style={styles.button}>
         <Text style={styles.buttonText}>Add Service</Text>
       </TouchableOpacity>
-
-    
     </ScrollView>
   );
 }
@@ -195,11 +198,6 @@ const styles = StyleSheet.create({
     marginBottom: 14,
     color: '#f0f0f0',
     fontSize: 15,
-    shadowColor: '#a78bfa',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 4,
   },
   uploadButton: {
     backgroundColor: '#444',
@@ -226,11 +224,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 10,
-    shadowColor: '#a78bfa',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.5,
-    shadowRadius: 10,
-    elevation: 6,
   },
   buttonText: {
     color: '#1f1f2e',
