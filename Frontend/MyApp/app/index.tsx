@@ -13,18 +13,32 @@ import {
 
 const { width, height } = Dimensions.get('window');
 import logo from '../assets/images/b.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
   const router = useRouter();
 
-  // Redirect after 3 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      router.replace('/(auth)/login');
-    }, 3000);
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await AsyncStorage.getItem('userToken');
+      if (token) {
+        router.replace('/(home)');
+      } else {
+        router.replace('/(auth)/login');
+      }
+    }
+     const timer = setTimeout(() => {
+      checkAuth();
+    }, 3000);
     return () => clearTimeout(timer); // clean up
   }, []);
+  
+
+ 
+   
+
+    
 
   const [fontsLoaded] = useFonts({
     Poppins_700Bold,

@@ -20,7 +20,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    axios.post('http://10.61.90.94:3000/login', { email, password })
+    axios.post('http://10.61.89.72:3000/login', { email, password })
       .then(async (response) => {
         const { token, user } = response.data;
         if (token && user) {

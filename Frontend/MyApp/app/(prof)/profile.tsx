@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity, SafeAreaView } from 'react-native';
 import axiosInstance from '../axiosInstance'; 
 import { useRouter } from 'expo-router';
 import * as Animatable from 'react-native-animatable';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -11,6 +12,12 @@ export default function ProfileScreen() {
 
   const getposts = () => router.push('/(prof)/posts');
   const update = () => router.push('/(prof)/pictureProf');
+
+    const handleLogout = async () => {
+    await AsyncStorage.removeItem('userToken');
+    await AsyncStorage.removeItem('userId');
+    router.replace('/login');
+  };
 
   const getProfile = async () => {
     try {
@@ -37,6 +44,13 @@ export default function ProfileScreen() {
   }
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+      {/* 🔓 Logout Button at Top-Right */}
+      <View style={styles.logoutTopWrapper}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity onPress={update}>
         <Text style={styles.updateLink}>🔄 Update Profile Picture</Text>
@@ -76,6 +90,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </Animatable.View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -167,6 +182,23 @@ const styles = StyleSheet.create({
   postsText: {
     color: '#f0e6ff',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+   logoutTopWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 15,
+    backgroundColor: '#fff',
+  },
+  logoutButton: {
+    backgroundColor: '#F44336',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+  },
+  logoutText: {
+    color: '#fff',
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });
