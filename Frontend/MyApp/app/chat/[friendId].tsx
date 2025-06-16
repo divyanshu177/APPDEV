@@ -15,7 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { io } from 'socket.io-client';
 
 const socket = io("http://10.61.89.72:3000", {
-  transports: ['websocket'], // optional but recommended
+  transports: ['websocket'], 
 });
 
 type Message = {

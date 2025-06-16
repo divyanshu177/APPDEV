@@ -16,7 +16,6 @@ const isloggedIn = async (req, res, next) => {
         const decoded = jwt.verify(token, process.env.SECRET);
         console.log("Decoded token:", decoded);
         const user = await User.findById(decoded.id);
-        console.log("User found:", user);
 
         if (!user ) {
             return res.status(401).json({ message: "Invalid or expired token." });

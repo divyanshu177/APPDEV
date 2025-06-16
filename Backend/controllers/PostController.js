@@ -7,22 +7,20 @@ const Service = require('../models/service');
 
 const createPost = async (req, res) => {
     try {
-        const {sellerId, serviceId, desc,image ,dummySeller,serviceName} = req.body;
-        console.log(serviceId);
+        const {sellerId, serviceId, desc,image ,dummySellerId,serviceName,review} = req.body;
+        console.log("creating post");
         const service = await Service.findById(serviceId);
  
         if (!service) {
             return res.status(404).json({ message: "Service not found" });
         }
-        let dummySellerId = null;
-        console.log("Dummy Seller:", dummySeller);
-        
-        if(dummySeller ===0){
-            dummySellerId = null;
+       
+        let dummySeller=0;
+
+        if(dummySellerId!==null){
+            dummySeller=1;
         }
-        else{
-        dummySellerId = req.user._id ;
-        }
+
         let costo =0;
         
 
@@ -49,7 +47,8 @@ const createPost = async (req, res) => {
           serviceName: serviceName,
           dummyseller: dummySeller,
           dummysellerId: dummySellerId,
-          referredAt: new Date()
+          referredAt: new Date(),
+          ...(review && { review })
     });
 
         await newPost.save();
@@ -62,6 +61,7 @@ const createPost = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+
 const updatePost = async (req, res) =>{
     try{
         const { postId } = req.params;

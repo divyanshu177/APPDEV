@@ -19,8 +19,8 @@ type Post = {
   image?: string;
   desc: string;
   cost: number;
-  serviceId?: { name?: string };
-  sellerId?: { name?: string; _id?: string };
+  serviceId?: { name?: string; _id?:string };
+  sellerId?: { name?: string; _id?:string };
   dummyseller?: number;
   dummysellerId?: { name?: string; _id?: string };
 };
@@ -132,9 +132,12 @@ const HomePage = () => {
   style={[styles.buyButton, { marginTop: 12 }]}
  onPress={() => router.push({
   pathname: '/(prof)/PaymentScreen',
-  params: { 
-    fee: item.cost 
-  }
+  params: { cost: item.cost,
+            sellerId:item.sellerId?._id,
+            serviceId:item.serviceId?._id,
+            dummySellerId:item.dummysellerId?._id 
+
+   }
 })}
 >
   <Text style={styles.buyButtonText}>BUY NOW</Text>

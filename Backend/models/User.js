@@ -1,5 +1,6 @@
 
 const mongoose = require('mongoose');
+const service = require('./service');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -55,10 +56,12 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Message',
   }],
-  //orders:[{
-  // type:mongoose.Schema.Types.ObjectId,
-  //ref:'service',
-  // }],
+  orders:[
+    {
+      type:mongoose.Schema.Types.ObjectId,
+      ref:'service'
+    }
+  ]
 
 }, 
 { timestamps: true }
