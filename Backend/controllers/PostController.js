@@ -43,7 +43,7 @@ const createPost = async (req, res) => {
           sellerId: sellerId,
           desc: desc,
           cost: costo,
-          image: image,
+          images:image,
           serviceName: serviceName,
           dummyseller: dummySeller,
           dummysellerId: dummySellerId,
@@ -77,7 +77,7 @@ const updatePost = async (req, res) =>{
         }
 
         post.desc = desc || post.desc;
-        post.image = image || post.image;
+        post.image = image || post.images;
 
         await post.save();
 

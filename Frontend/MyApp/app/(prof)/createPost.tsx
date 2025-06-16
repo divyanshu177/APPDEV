@@ -1,14 +1,14 @@
 import { useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import { Text, View, TextInput, Alert, Button, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, View, TextInput, Alert, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axiosInstance from "../axiosInstance";
 import * as ImagePicker from 'expo-image-picker';
 
-export default function create() {
+export default function Create() {   // Capitalized component name (React convention)
     const item = useLocalSearchParams();
     const [review, setReview] = useState("");
-    const [ImageUri, setImageUri] = useState("");
+    const [ImageUris, setImageUris] = useState<string[]>([]);
 
     const handleAddPost = async () => {
         const id = await AsyncStorage.getItem('userId');
@@ -18,7 +18,7 @@ export default function create() {
             serviceId: item._id,
             sellerId: item.seller,
             desc: item.description,
-            image: ImageUri,
+            image: ImageUris,
             dummySellerId: id,
             serviceName: item.name,
             review: review
@@ -47,17 +47,18 @@ export default function create() {
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,
             quality: 1,
+            allowsMultipleSelection: true,
         });
 
         if (!result.canceled) {
-            console.log(result);
-            setImageUri(result.assets[0].uri);
-            console.log("now uploading");
+            const uris = result.assets.map(asset => asset.uri);
+            console.log("Selected URIs:", uris);
+            setImageUris(prevUris => [...prevUris, ...uris]);
         }
-    }
+    };
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <Text style={styles.heading}>Create Post</Text>
             <TextInput
                 style={styles.input}
@@ -72,26 +73,37 @@ export default function create() {
                 <Text style={styles.buttonText}>Upload Photo/Video</Text>
             </TouchableOpacity>
 
+            {/* Show Selected Images Preview */}
+            <View style={styles.previewContainer}>
+                {ImageUris.map((uri, index) => (
+                    <Image
+                        key={index}
+                        source={{ uri }}
+                        style={styles.previewImage}
+                    />
+                ))}
+            </View>
+
             <TouchableOpacity style={[styles.button, { backgroundColor: '#00ffff' }]} onPress={handleAddPost}>
                 <Text style={styles.buttonText}>Add Post</Text>
             </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         padding: 20,
-        backgroundColor: '#20232a', // dark background
-        flex: 1,
-        justifyContent: 'center'
+        backgroundColor: '#20232a',
+        flexGrow: 1,
+        justifyContent: 'center',
     },
     heading: {
         fontSize: 26,
         fontWeight: 'bold',
         marginBottom: 20,
         textAlign: 'center',
-        color: '#00ffff' // cyan-blue
+        color: '#00ffff'
     },
     input: {
         height: 100,
@@ -100,12 +112,12 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 8,
         marginBottom: 20,
-        backgroundColor: '#1a1a1a', // dark gray
+        backgroundColor: '#1a1a1a',
         color: '#fff',
         textAlignVertical: 'top'
     },
     button: {
-        backgroundColor: '#0055ff', // blue button
+        backgroundColor: '#0055ff',
         padding: 15,
         borderRadius: 8,
         marginBottom: 15,
@@ -115,5 +127,17 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold'
+    },
+    previewContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginVertical: 10,
+        justifyContent: 'center'
+    },
+    previewImage: {
+        width: 80,
+        height: 80,
+        margin: 5,
+        borderRadius: 8,
     }
 });
