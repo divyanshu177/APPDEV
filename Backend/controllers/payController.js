@@ -8,6 +8,7 @@ const instance = new Razorpay({
 });
 
 const createPaymentLink = async (req, res) => {
+  console.log(req.body)
   console.log('okookok')
 
   try {
@@ -16,22 +17,23 @@ const createPaymentLink = async (req, res) => {
 
     const finalAmount = (typeof amount === 'object') ? amount.fee.cost : amount;
 
-    const options = {
-      amount: finalAmount * 100, 
-      currency: 'INR',
-      description: 'Payment for your order',
-      customer: {
-        name,
-        contact,
-        email,
-      },
-      notify: {
-        sms: true,
-        email: true,
-      },
-      callback_url: 'http://10.61.89.72:3000/payment-success', 
-      callback_method: 'get',
-    };
+  const options = {
+    amount: (amount) * 100, 
+    currency: 'INR',
+    description: 'Payment for your order',
+    customer: {
+      name,
+      contact,
+      email,
+    },
+    notify: {
+      sms: true,
+      email: true,
+    },
+    callback_url: 'http://10.61.89.72:3000/payment-success', // Change to your own URL
+    callback_method: 'get',
+    
+  };
 
     const link = await instance.paymentLink.create(options); // ✅ options is properly defined now
     res.status(200).json({ url: link.short_url });

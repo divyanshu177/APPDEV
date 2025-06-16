@@ -63,6 +63,9 @@ const styles = StyleSheet.create({
     color: '#66FFFF', // Sky Blue
     textAlign: 'center',
     marginBottom: 20,
+    textShadowColor: '#FEE1B6AA',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 6,
   },
   card: {
     backgroundColor: '#3d3d5c', // Deep Purple Card

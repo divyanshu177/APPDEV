@@ -1,36 +1,38 @@
-// import { Tabs } from 'expo-router';
-
-// export default function HomeLayout() {
-//   return (
-//     <Tabs>
-//       <Tabs.Screen name="index" options={{ title: 'Home' }} />
-//       <Tabs.Screen name="network" options={{ title: 'Network' }} />
-//       <Tabs.Screen name="addPost" options={{ title: 'Add Post' }} />
-//       <Tabs.Screen name="notification" options={{ title: 'Notification' }} />
-//       <Tabs.Screen name="addService" options={{ title: 'Add Service' }} />
-//     </Tabs>
-//   );
-// }
-
 import { FontAwesome } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
 export default function HomeLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: '#FEE1B6',
-        tabBarStyle: {
-          backgroundColor: '#2F2F2F',
-        },
-      }}
-    >
+<Tabs
+  screenOptions={{
+    headerShown: false,
+    tabBarActiveTintColor: '#FEE1B6',
+    tabBarInactiveTintColor: '#888',
+    tabBarStyle: {
+      backgroundColor: '#1A1A1A',
+      borderTopWidth: 0,
+      paddingVertical: 8,
+      paddingBottom: 12,
+    },
+    tabBarLabelStyle: {
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    tabBarItemStyle: {
+    },
+    tabBarIconStyle: {
+      shadowColor: '#FEE1B6',
+      shadowOffset: { width: 0, height: 0 },
+      shadowOpacity: 0.6,
+      shadowRadius: 4,
+    },
+  }}
+>
+
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="home" size={size} color={color} />
           ),
@@ -40,7 +42,6 @@ export default function HomeLayout() {
         name="friends"
         options={{
           title: 'Network',
-            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="users" size={size} color={color} />
           ),
@@ -50,7 +51,6 @@ export default function HomeLayout() {
         name="addPost"
         options={{
           title: 'Add Post',
-            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="plus-circle" size={size} color={color} />
           ),
@@ -60,7 +60,6 @@ export default function HomeLayout() {
         name="notification"
         options={{
           title: 'Notifications',
-            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="bell" size={size} color={color} />
           ),
@@ -70,7 +69,6 @@ export default function HomeLayout() {
         name="addService"
         options={{
           title: 'Services',
-            headerShown :false,
           tabBarIcon: ({ color, size }) => (
             <FontAwesome name="briefcase" size={size} color={color} />
           ),

@@ -1,133 +1,147 @@
-import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
-import * as Animatable from 'react-native-animatable';
-import { router, useNavigation } from 'expo-router';
-import axios from 'axios';
 
+
+import { useState } from 'react';
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, ImageBackground
+} from 'react-native';
+import * as Animatable from 'react-native-animatable';
+import { router } from 'expo-router';
+import axios from 'axios';
 
 export default function Signup() {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
- 
-
 
   const handleSignup = () => {
-    console.log('Signing up with:', { name, phone, email, password });
     axios.post('http://10.61.89.72:3000/register', { name, phone, email, password })
       .then(response => {
-        console.log('Signup successful:', response.data);
-    
-       router.replace('/login'); 
-
-      })
-      
-    // You can add validation here
-    router.replace('/login'); // Go back to login
+        router.replace('/login');
+      });
   };
 
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor="#EEDEF6" barStyle="dark-content" />
+    <ImageBackground
+      source={require('../../assets/images/signUp.jpg')} 
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <StatusBar backgroundColor="transparent" translucent barStyle="light-content" />
 
-      <Animatable.Text animation="fadeInDown" style={styles.title}>
-        Create Account
-      </Animatable.Text>
+      <View style={styles.overlay} />
 
-      <Animatable.Text animation="fadeInDown" delay={200} style={styles.subtitle}>
-        Already have an account?{' '}
-        <Text style={{ color: 'blue' }} onPress={() => router.replace('/login')}>
-          Login
+      <Animatable.View animation="fadeInDown" style={styles.container}>
+        <Text style={styles.title}>Create Account</Text>
+        <Text style={styles.subtitle}>
+          Already have an account?{' '}
+          <Text style={styles.link} onPress={() => router.replace('/login')}>
+            Login
+          </Text>
         </Text>
-      </Animatable.Text>
 
-      <Animatable.View animation="fadeInUp" delay={400} style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="Full Name"
-          placeholderTextColor="#2F2F2F"
-          value={name}
-          onChangeText={setName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Contact Number"
-          placeholderTextColor="#2Ff2F2F"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#2F2F2F"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#2F2F2F"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
+        <Animatable.View animation="fadeInUp" delay={300} style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder="Full Name"
+            placeholderTextColor="#bbb"
+            value={name}
+            onChangeText={setName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Contact Number"
+            placeholderTextColor="#bbb"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="#bbb"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor="#bbb"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
 
-        <TouchableOpacity style={styles.button} onPress={handleSignup}>
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleSignup}>
+            <Text style={styles.buttonText}>Sign Up</Text>
+          </TouchableOpacity>
+        </Animatable.View>
       </Animatable.View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    backgroundColor: '#EEDEF6',
     justifyContent: 'center',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.65)',
+  },
+  container: {
     paddingHorizontal: 30,
+   marginBottom: 1,
   },
   title: {
-    fontSize: 34,
-    fontWeight: 'bold',
-    color: '#2F2F2F',
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#fff',
     textAlign: 'center',
-    marginBottom: 6,
+    marginBottom: 10,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#2F2F2F',
+    fontSize: 15,
+    color: '#ccc',
     textAlign: 'center',
     marginBottom: 25,
   },
+  link: {
+    color: '#4EF1E3',
+    fontWeight: 'bold',
+  },
   form: {
-    backgroundColor: '#CCE5E3',
+    backgroundColor: 'rgba(255,255,255,0.05)',
     padding: 20,
     borderRadius: 20,
-    elevation: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.15)',
+    // backdropFilter: 'blur(10px)', // Note: works on web; not natively in RN
   },
   input: {
-    height: 50,
-    borderColor: '#FEE1B6',
+    height: 48,
+    borderColor: '#4EF1E3',
     borderWidth: 1,
     borderRadius: 10,
     paddingHorizontal: 15,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     marginBottom: 15,
-    color: '#2F2F2F',
+    color: '#fff',
   },
   button: {
-    backgroundColor: '#FEE1B6',
+    backgroundColor: '#4EF1E3',
     paddingVertical: 15,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 10,
+    shadowColor: '#4EF1E3',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
   },
   buttonText: {
-    color: '#2F2F2F',
+    color: '#000',
     fontSize: 18,
     fontWeight: 'bold',
   },

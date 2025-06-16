@@ -12,21 +12,33 @@ import {
 } from '@expo-google-fonts/poppins';
 
 const { width, height } = Dimensions.get('window');
-
-// @ts-ignore
-import logo from '../assets/images/Earnn .jpg';
+import logo from '../assets/images/b.png';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
   const router = useRouter();
 
-  // Redirect after 3 seconds
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      router.replace('/(auth)/login');
-    }, 3000);
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await AsyncStorage.getItem('userToken');
+      if (token) {
+        router.replace('/(home)');
+      } else {
+        router.replace('/(auth)/login');
+      }
+    }
+     const timer = setTimeout(() => {
+      checkAuth();
+    }, 3000);
     return () => clearTimeout(timer); // clean up
   }, []);
+  
+
+ 
+   
+
+    
 
   const [fontsLoaded] = useFonts({
     Poppins_700Bold,
@@ -39,6 +51,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {/* Background Video */}
       <Video
+      
         source={{ uri: 'https://cdn.pixabay.com/video/2024/04/15/208082_large.mp4' }}
         rate={1.0}
         volume={1.0}
@@ -86,8 +99,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     marginBottom: 20,
   },
   title: {

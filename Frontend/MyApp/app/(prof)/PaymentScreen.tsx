@@ -22,7 +22,13 @@ export default function PaymentScreen() {
         name: 'Test User',
         email: 'bt23cse006@nituk.com',
         contact: '9027065493',
-      });
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // ⬅️ Send token in Authorization header
+        },
+      }
+    );
 
       setPaymentUrl(data.url); 
     }
