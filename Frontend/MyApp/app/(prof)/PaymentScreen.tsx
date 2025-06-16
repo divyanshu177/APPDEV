@@ -4,6 +4,7 @@ import { WebView } from 'react-native-webview';
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 import axiosInstance from '../axiosInstance';
+const asyncStorage = require('@react-native-async-storage/async-storage');
 
 
 export default function PaymentScreen() {
@@ -11,6 +12,7 @@ export default function PaymentScreen() {
   const { cost, sellerId, serviceId, dummySellerId } = useLocalSearchParams();
   console.log(sellerId)
   console.log("dummySellerId",dummySellerId)
+  const token = asyncStorage.getItem('token'); // ⬅️ Get token from AsyncStorage
   
 
 
