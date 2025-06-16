@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 
 export default function ServicesScreen() {
   const [services, setServices] = useState([]);
-  const router=useRouter();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -20,27 +20,24 @@ export default function ServicesScreen() {
     fetchServices();
   }, []);
 
- 
-
-  const create= async(item) =>{
-     router.push({
-      pathname:"/createPost",
-      params:item
-
-  });
+  const create = async (item) => {
+    router.push({
+      pathname: "../(prof)/createPost",
+      params: item
+    });
   }
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
       <Text style={styles.price}>₹{item.originalPrice}</Text>
-      <Button title="Add Post" onPress={ () =>create(item) } />
+      <Button title="Add Post" onPress={() => create(item)} color="#4FC3F7" />
     </View>
   );
 
   return (
-    <View>
-      <Text>Your Orders</Text>
+    <View style={styles.screen}>
+      <Text style={styles.title}>Your Orders</Text>
       <FlatList
         data={services}
         keyExtractor={(item) => item._id}
@@ -52,14 +49,37 @@ export default function ServicesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 10 },
+  screen: {
+    flex: 1,
+    backgroundColor: '#2c2c54', // Dark Violet background
+    paddingTop: 40,
+  },
+  container: {
+    padding: 10,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#66FFFF', // Sky Blue
+    textAlign: 'center',
+    marginBottom: 20,
+  },
   card: {
-    backgroundColor: '#f4f4f4',
+    backgroundColor: '#3d3d5c', // Deep Purple Card
     padding: 16,
     marginBottom: 10,
     borderRadius: 10,
-    elevation: 2,
+    elevation: 4,
   },
-  name: { fontSize: 18, fontWeight: 'bold' },
-  price: { marginVertical: 6, fontSize: 16, color: '#333' },
+  name: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF', // White text
+    marginBottom: 6,
+  },
+  price: {
+    fontSize: 16,
+    color: '#66FFFF', // Sky Blue price
+    marginBottom: 10,
+  }
 });

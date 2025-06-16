@@ -15,7 +15,7 @@ export default function Signup() {
 
   const handleSignup = () => {
     console.log('Signing up with:', { name, phone, email, password });
-    axios.post('http://10.61.89.72:3000/register', { name, phone, email, password })
+    axios.post('http://10.81.18.222:3000/register', { name, phone, email, password })
       .then(response => {
         console.log('Signup successful:', response.data);
     
