@@ -70,7 +70,7 @@ export default function AddPostScreen() {
       const token = await AsyncStorage.getItem('userToken');
 
       const response = await axios.post(
-        'http://10.61.4.86:3000/login/createPost',
+        'http://10.61.90.94:3000/login/createPost',
         payload,
         {
           headers: {

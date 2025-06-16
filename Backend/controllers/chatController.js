@@ -56,16 +56,17 @@ const sendMessage = async (req, res) => {
   try {
     const senderId = req.user._id;
     const { receiverId, content } = req.body;
+ ;
 
     // Save message
-    const message = await Message.create({ sender: senderId, receiver: receiverId, content });
+    const message = await Message.create({ sender: senderId, receiver: receiverId, content , isRead:false});
 
     // Update sender and receiver chat lists
     const sender = await User.findById(senderId);
     const receiver = await User.findById(receiverId);
 
-    sender.chats.push(message);
-    receiver.chats.push(message);
+    sender.chats.push(message._id);
+    receiver.chats.push(message._id);
 
     await sender.save();
     await receiver.save();
@@ -101,8 +102,42 @@ const getMessages = async (req, res) => {
     res.status(500).json({ success: false, error: 'Failed to retrieve messages' });
   }
 };
+const markAsRead = async (req, res) => {
+  const { senderId } = req.body;
+  const receiverId = req.user._id;
+
+  await Message.updateMany(
+    { sender: senderId, receiver: receiverId, isRead: false },
+    { $set: { isRead: true } }
+  );
+
+  res.status(200).json({ success: true });
+};
+const getUnreadCounts = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const counts = await Message.aggregate([
+      { $match: { receiver: userId, isRead: false } },
+      {
+        $group: {
+          _id: '$sender',
+          count: { $sum: 1 }
+        }
+      }
+    ]);
+
+    res.status(200).json({ success: true, counts });
+  } catch (err) {
+    console.error('Error fetching unread counts:', err);
+    res.status(500).json({ success: false });
+  }
+};
+
 
 module.exports = {
   sendMessage,
-  getMessages
+  getMessages,
+  markAsRead,
+  getUnreadCounts
 };

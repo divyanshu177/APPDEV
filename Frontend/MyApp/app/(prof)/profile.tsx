@@ -1,28 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
-import axiosInstance from '../axiosInstance'; // adjust path as needed
-import {useRouter} from 'expo-router';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
-
+import axiosInstance from '../axiosInstance'; 
+import { useRouter } from 'expo-router';
+import * as Animatable from 'react-native-animatable';
 
 export default function ProfileScreen() {
-  const router=useRouter();
-
+  const router = useRouter();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-const getposts= async() =>{
-    router.push('/(prof)/posts')
-}
+  const getposts = () => router.push('/(prof)/posts');
+  const update = () => router.push('/(prof)/pictureProf');
 
-const update = async() => {
-   router.push('/(prof)/posts')
-}
-
-const getProfile = async () => {
+  const getProfile = async () => {
     try {
       const response = await axiosInstance.get('/login/getProfile');
-      console.log('Profile Response:', response.data);
       setProfile(response.data.profile);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -35,39 +27,34 @@ const getProfile = async () => {
     getProfile();
   }, []);
 
-  if (loading) {
-    return <ActivityIndicator size="large" style={{ marginTop: 50 }} />;
-  }
-
+  if (loading) return <ActivityIndicator size="large" style={{ marginTop: 50 }} color="#a78bfa" />;
   if (!profile) {
     return (
       <View style={styles.centered}>
-        <Text>Unable to load profile.</Text>
+        <Text style={{ color: '#fff' }}>Unable to load profile.</Text>
       </View>
     );
   }
 
-
-
-   
   return (
     <ScrollView contentContainerStyle={styles.container}>
-    <View style={styles.headerContainer}>  
-    <View style={styles.profileContainer}>
-      <Image
-        source={{ uri: profile.profilePicture.startsWith('http') ? profile.profilePicture : `http://your-backend-url.com/uploads/${profile.profilePicture}` }}
-        style={styles.profileImage}
-      />
-      </View>
-      </View>  
+      <TouchableOpacity onPress={update}>
+        <Text style={styles.updateLink}>🔄 Update Profile Picture</Text>
+      </TouchableOpacity>
 
-      <Text style={styles.name}>{profile.name}</Text>
-      <Text style={styles.email}>📧 {profile.email}</Text>
-      <Text style={styles.phone}>📱 {profile.phone}</Text>
-      <Text style={styles.wallet}>Wallet Balance: ₹{profile.walletBalance}</Text>
+      <Animatable.View animation="fadeInDown" duration={600} style={styles.card}>
+        <Image
+          source={{ uri: profile.profilePicture }}
+          style={styles.profileImage}
+        />
+        <Text style={styles.name}>{profile.name}</Text>
+        <Text style={styles.email}>📧 {profile.email}</Text>
+        <Text style={styles.phone}>📱 {profile.phone}</Text>
+        <Text style={styles.wallet}>Wallet Balance: ₹{profile.walletBalance}</Text>
+      </Animatable.View>
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Services Posted</Text>
+      <Animatable.View animation="fadeInUp" delay={200} duration={600} style={styles.card}>
+        <Text style={styles.sectionTitle}>🛠️ Services Posted</Text>
         {profile.services.length > 0 ? (
           profile.services.map((service: any, index: number) => (
             <Text key={index} style={styles.serviceItem}>• {service}</Text>
@@ -75,109 +62,111 @@ const getProfile = async () => {
         ) : (
           <Text style={styles.serviceItem}>No services posted yet.</Text>
         )}
-      </View>
-      <TouchableOpacity onPress={getposts} style={styles.postsContainer}>
-          <Text style={styles.postsText}>📄 Your Posts</Text>
-      </TouchableOpacity>
+      </Animatable.View>
 
-      <TouchableOpacity onPress={update} style={styles.postsContainer}>
+      <Animatable.View animation="fadeInUp" delay={400} duration={600} style={styles.buttonCard}>
+        <TouchableOpacity onPress={getposts}>
+          <Text style={styles.postsText}>📄 View Your Posts</Text>
+        </TouchableOpacity>
+      </Animatable.View>
+
+      <Animatable.View animation="fadeInUp" delay={600} duration={600} style={styles.buttonCard}>
+        <TouchableOpacity onPress={update}>
           <Text style={styles.postsText}>📝 Update Profile</Text>
-      </TouchableOpacity>
-
+        </TouchableOpacity>
+      </Animatable.View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
+    backgroundColor: '#0f0f1a',
+    flexGrow: 1,
     alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  headerContainer: {
-    
-    position: 'relative',
-    backgroundColor: '#fff',
-    paddingTop: 10,
-  },
-  homeIcon: {
-    top: 0,
-    left: -120,
-    zIndex: 1,
-  },
-  profileContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#ccc',
-  },
-  name: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 6,
-  },
-  email: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 4,
-  },
-  phone: {
-    fontSize: 16,
-    color: '#555',
-    marginBottom: 4,
-  },
-  wallet: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2F2F2F',
-    marginBottom: 20,
-  },
-  section: {
-    width: '100%',
-    marginTop: 20,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    padding: 15,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  serviceItem: {
-    fontSize: 16,
-    color: '#333',
-    marginLeft: 10,
+    paddingVertical: 30,
+    paddingHorizontal: 16,
   },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#0f0f1a',
   },
-  postsContainer: {
-  width: '100%',
-  backgroundColor: '#F5F5F5',
-  padding: 15,
-  marginTop: 25,
-  borderRadius: 10,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.1,
-  shadowRadius: 4,
-  elevation: 3,
-},
-
-postsText: {
-  fontSize: 16,
-  fontWeight: 'bold',
-  color: '#2F2F2F',
-},
-
+  updateLink: {
+    color: '#a78bfa',
+    fontSize: 16,
+    marginBottom: 10,
+    textDecorationLine: 'underline',
+  },
+  card: {
+    width: '100%',
+    backgroundColor: '#1a1a2e',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#a78bfa',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: '#a78bfa33',
+  },
+  buttonCard: {
+    width: '100%',
+    backgroundColor: '#2b2b3c',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginBottom: 16,
+    alignItems: 'center',
+    shadowColor: '#a78bfa',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 60,
+    backgroundColor: '#2e2e3e',
+    alignSelf: 'center',
+    marginBottom: 16,
+    borderWidth: 2,
+    borderColor: '#a78bfa88',
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#f0e6ff',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  email: { fontSize: 15, color: '#ccc', textAlign: 'center' },
+  phone: { fontSize: 15, color: '#ccc', textAlign: 'center' },
+  wallet: {
+    fontSize: 16,
+    color: '#4afcb1',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#a78bfa',
+    marginBottom: 10,
+  },
+  serviceItem: {
+    fontSize: 15,
+    color: '#ddd',
+    marginBottom: 6,
+  },
+  postsText: {
+    color: '#f0e6ff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
-

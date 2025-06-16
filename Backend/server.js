@@ -1,137 +1,4 @@
-
-// const Message = require('./models/Message');
-// const User = require('./models/User');
-// const express = require('express');
-// const connectDb = require('./config/db');
-// const isLoggedIn = require('./middlewares/isLoggedIn');
-// const isAuthorized = require('./middlewares/isAuthorized');
-// const cors = require('cors');
-
-// const app = express(); // ❗️ You missed this line earlier!
-
-// // Middleware
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
-// app.use(cors());
-
-// // Database
-// connectDb().then(() => {
-//   console.log("Database connected successfully");
-// });
-
-// // HTTP & Socket.IO setup
-// const http = require('http');
-// const server = http.createServer(app);
-// const socketIO = require('socket.io');
-// const io = socketIO(server, {
-//   cors: {
-//     origin: '*',
-//   },
-// });
-
-// // Socket.IO handling
-// io.on('connection', (socket) => {
-//   console.log('New client connected');
-
-//   socket.on('joinRoom', ({ userId }) => {
-//     socket.join(userId); // Join personal room
-//   });
-
-//   socket.on('sendMessage', async ({ senderId, receiverId, content }) => {
-//     try {
-//       // Save message to DB
-//       const message = await Message.create({ sender: senderId, receiver: receiverId, content });
-
-//       const sender = await User.findById(senderId);
-//       const receiver = await User.findById(receiverId);
-//       sender.chats.push(message);
-//       receiver.chats.push(message);
-//       await sender.save();
-//       await receiver.save();
-
-//       // Emit to receiver and optionally to sender
-//       io.to(receiverId).emit('receiveMessage', message);
-//       io.to(senderId).emit('receiveMessage', message);
-//     } catch (err) {
-//       console.error('❌ Error in sendMessage socket:', err.message);
-//       socket.emit('errorMessage', 'Failed to send message');
-//     }
-//   });
-
-
-//   socket.on('disconnect', () => {
-//     console.log('Client disconnected');
-//   });
-// });
-
-// // ROUTES
-// const {
-//   register, login, logout
-// } = require('./controllers/authController');
-
-// const {
-//   addService, removeService, updateService, displayServices
-// } = require('./controllers/SellerController');
-
-// const {
-//   sendFriendRequest, acceptFriendRequest, rejectFriendRequest, getFriendRequests,
-//   getFriends
-// } = require('./controllers/friendController');
-
-// const {
-//   createPost, updatePost, removePost, displayPost, getPost, getMyPosts
-// } = require('./controllers/PostController');
-
-// const {
-//   searchUser, searchPost, getProfile, getAllUsers
-// } = require('./controllers/UserController');
-
-// const { sendMessage, getMessages } = require('./controllers/chatController');
-
-// // Chat routes
-// app.post('/login/sendMessage', isLoggedIn, sendMessage);
-// app.get('/login/getMessages/:friendId', isLoggedIn, getMessages);
-
-// // Auth routes
-// app.post('/register', register);
-// app.post('/login', isAuthorized, login);
-// app.post('/logout', isLoggedIn, logout);
-
-// // Service routes
-// app.post('/login/addService', isLoggedIn, addService);
-// app.post('/login/updateService/:serviceId', isLoggedIn, updateService);
-// app.delete('/login/removeService/:serviceId', isLoggedIn, removeService);
-// app.get('/login/getServices', isLoggedIn, displayServices);
-
-// // Friend routes
-// app.post('/login/sendFriendRequest', isLoggedIn, sendFriendRequest);
-// app.post('/login/acceptFriendRequest', isLoggedIn, acceptFriendRequest);
-// app.post('/login/rejectFriendRequest', isLoggedIn, rejectFriendRequest);
-// app.get('/login/getFriendRequests', isLoggedIn, getFriendRequests);
-// app.get('/login/getFriends', isLoggedIn, getFriends);
-
-// // Post routes
-// app.post('/login/createPost', isLoggedIn, createPost);
-// app.put('/login/updatePost/:postId', isLoggedIn, updatePost);
-// app.get('/login/displayPost', isLoggedIn, displayPost);
-// app.delete('/login/removePost/:postId', isLoggedIn, removePost);
-// app.get('/login/getPost/:postId', isLoggedIn, getPost);
-// app.get('/login/getMyPosts', isLoggedIn, getMyPosts);
-
-// // User routes
-// app.get('/login/searchUser', isLoggedIn, searchUser);
-// app.get('/login/searchPost', isLoggedIn, searchPost);
-// app.get('/login/getProfile', isLoggedIn, getProfile);
-// app.get('/login/getAllUsers', isLoggedIn, getAllUsers);
-
-// // ✅ Only this server.listen() should be used
-// server.listen(3000, () => {
-//   console.log("Server is running on port 3000");
-// });
-
-
-
-
+const path = require('path');
 const express = require('express');
 const http = require('http');
 const cors = require('cors');
@@ -140,6 +7,9 @@ const connectDb = require('./config/db');
 const isLoggedIn = require('./middlewares/isLoggedIn');
 const isAuthorized = require('./middlewares/isAuthorized');
 const socket = require('./socket'); // ✅ import socket.js
+const upload = require('./middlewares/upload');
+const { Server } = require('socket.io');
+
 
 const {
   register, login, logout
@@ -152,13 +22,13 @@ const {
   getFriends
 } = require('./controllers/friendController');
 const {
-  createPost, updatePost, removePost, displayPost, getPost, getMyPosts
+  createPost, updatePost, removePost, displayPost, getPost, getMyPosts,getPostByUser
 } = require('./controllers/PostController');
 const {
-  searchUser, searchPost, getProfile, getAllUsers, viewUserProfile
+  searchUser, searchPost, getProfile, getAllUsers, viewUserProfile, uploadProfile
 } = require('./controllers/UserController');
 const {
-  sendMessage, getMessages
+  sendMessage, getMessages, markAsRead, getUnreadCounts
 } = require('./controllers/chatController');
 
 // App setup
@@ -170,7 +40,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to DB
+const { createPaymentLink } = require('./controllers/payController');
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 connectDb().then(() => {
   console.log("✅ Database connected");
 });
@@ -182,11 +54,13 @@ app.set('io', io); // optional: allows access via req.app.get('io')
 // Routes — Chat
 app.post('/login/sendMessage', isLoggedIn, sendMessage);
 app.get('/login/getMessages/:friendId', isLoggedIn, getMessages);
-
+app.get('/login/getUnreadCounts', isLoggedIn, getUnreadCounts);
+app.post('/login/markAsRead', isLoggedIn, markAsRead);
 // Routes — Auth
 app.post('/register', register);
 app.post('/login', isAuthorized, login);
 app.post('/logout', isLoggedIn, logout);
+
 
 // Routes — Services
 app.post('/login/addService', isLoggedIn, addService);
@@ -195,6 +69,7 @@ app.delete('/login/removeService/:serviceId', isLoggedIn, removeService);
 app.get('/login/getServices', isLoggedIn, displayServices);
 
 // Routes — Friends
+
 app.post('/login/sendFriendRequest', isLoggedIn, sendFriendRequest);
 app.post('/login/acceptFriendRequest', isLoggedIn, acceptFriendRequest);
 app.post('/login/rejectFriendRequest', isLoggedIn, rejectFriendRequest);
@@ -202,21 +77,35 @@ app.get('/login/getFriendRequests', isLoggedIn, getFriendRequests);
 app.get('/login/getFriends', isLoggedIn, getFriends);
 
 // Routes — Posts
+
 app.post('/login/createPost', isLoggedIn, createPost);
 app.put('/login/updatePost/:postId', isLoggedIn, updatePost);
 app.get('/login/displayPost', isLoggedIn, displayPost);
 app.delete('/login/removePost/:postId', isLoggedIn, removePost);
 app.get('/login/getPost/:postId', isLoggedIn, getPost);
 app.get('/login/getMyPosts', isLoggedIn, getMyPosts);
+app.post('/login/getPostByUser', isLoggedIn, getPostByUser);
 
 // Routes — Users
+
 app.get('/login/searchUser', isLoggedIn, searchUser);
 app.get('/login/searchPost', isLoggedIn, searchPost);
 app.get('/login/getProfile', isLoggedIn, getProfile);
 app.get('/login/getAllUsers', isLoggedIn, getAllUsers);
-app.get('/login/viewUserProfile', isLoggedIn, viewUserProfile);
+app.get('/api/user/:id', isLoggedIn, viewUserProfile);
+
+//app.get('/login/viewUserProfile', isLoggedIn, viewUserProfile);
+
+// Routes — Payment
+app.post('/login/createPaymentLink', isLoggedIn, createPaymentLink);
+
+
 
 // Start Server
-server.listen(3000, () => {
-  console.log("🚀 Server running on http://localhost:3000");
+app.post('/login/updateProfilePicture/:id', upload.single('profilePicture'), uploadProfile);
+
+
+const PORT = 3000;
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

@@ -15,7 +15,7 @@ export default function Signup() {
   const [password, setPassword] = useState('');
 
   const handleSignup = () => {
-    axios.post('http://10.61.4.86:3000/register', { name, phone, email, password })
+    axios.post('http://10.61.90.94:3000/register', { name, phone, email, password })
       .then(response => {
         router.replace('/login');
       });

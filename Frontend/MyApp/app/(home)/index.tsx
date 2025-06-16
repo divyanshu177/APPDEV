@@ -23,6 +23,7 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
+ 
 
   const fetchAllPosts = async () => {
     setLoading(true);
@@ -91,6 +92,10 @@ const HomePage = () => {
 
                 <View style={styles.detailsRow}>
   <Text style={styles.detailLabel}>sellerName:</Text>
+
+
+
+
   <TouchableOpacity onPress={() => router.push(`/(prof)/user/${item.sellerId?._id}`)}>
     <Text style={[styles.detailValue, styles.linkText]}>
       {item.sellerId?.name || 'Unknown'}
@@ -117,11 +122,20 @@ const HomePage = () => {
                   <Text style={styles.referredText}>Referred by: dummyseller</Text>
                 )}
 
-                <TouchableOpacity style={styles.buyButton}>
-                  <Text style={styles.buyButtonText}>Buy Now</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
+                <TouchableOpacity
+  style={[styles.buyButton, { marginTop: 12 }]}
+ onPress={() => router.push({
+  pathname: '/(prof)/PaymentScreen',
+  params: { 
+    fee: item.cost 
+  }
+})}
+>
+  <Text style={styles.buyButtonText}>BUY NOW</Text>
+</TouchableOpacity>
+
+            </View>
+          ))}
           </View>
         </ScrollView>
       )}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Razorpay Checkout</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body onload="startPayment()">
+<script>
+  function startPayment() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const checkoutURL = urlParams.get('url');
+
+    const script = document.createElement('script');
+    script.src = checkoutURL;
+    script.setAttribute('data-key', 'YOUR_KEY_ID'); // Not necessary if included in URL
+    script.setAttribute('data-order_id', 'ORDER_ID'); // Not necessary if included in URL
+    script.setAttribute('data-callback_url', 'http://10.61.36.91:3000/payment/success');
+    script.setAttribute('data-cancel_url', 'https://10.61.36.91:3000/payment/failure');
+    document.body.appendChild(script);
+  }
+</script>
+</body>
+</html>

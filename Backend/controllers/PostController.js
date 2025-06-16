@@ -148,6 +148,27 @@ const displayPost = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+const getPostByUser = async (req, res) => {
+  try {
+    const { userId } = req.body; // ✅ You’re sending it in body
+
+    const posts = await Post.find({ dummysellerId: userId }) // or sellerId depending on your model
+      .populate('serviceId')
+      .populate('sellerId')
+      .populate('dummysellerId');
+
+    if (!posts || posts.length === 0) {
+      return res.status(404).json({ message: "No posts found for this user" });
+    }
+
+    return res.status(200).json({ posts });
+  } catch (error) {
+    console.error("Error retrieving posts by user:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 
 module.exports = {
     createPost,
@@ -155,6 +176,7 @@ module.exports = {
     removePost,
     getPost,
     getMyPosts,
-    displayPost
+    displayPost,
+    getPostByUser
 
 };

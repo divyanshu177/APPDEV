@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
 
   profilePicture: {
     type: String,
-    default: 'default-profile.png',
+    default: '',
   },
 
   walletBalance: {
@@ -55,7 +55,13 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Message',
   }],
+  //orders:[{
+  // type:mongoose.Schema.Types.ObjectId,
+  //ref:'service',
+  // }],
 
-}, { timestamps: true });
+}, 
+{ timestamps: true }
+);
 
 module.exports = mongoose.model('User', userSchema);

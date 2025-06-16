@@ -2,6 +2,269 @@
 
 
 
+// import io from 'socket.io-client';
+// import { useLocalSearchParams } from 'expo-router';
+// import {
+//   View,
+//   Text,
+//   TextInput,
+//   FlatList,
+//   TouchableOpacity,
+//   StyleSheet,
+//   KeyboardAvoidingView,
+//   Platform,
+// } from 'react-native';
+// import { useEffect, useRef, useState } from 'react';
+// import axiosInstance from '../axiosInstance';
+// import { useRouter } from 'expo-router';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+// const router = useRouter();
+// // const socket = useRef<any>(null);
+
+// const socket = io("http://10.61.90.94:3000", {
+//   transports: ['websocket'], // optional but recommended
+// });
+
+// type Message = {
+//   _id?: string;
+//   sender: string;
+//   receiver: string;
+//   content: string;
+//   timestamp?: string;
+// };
+
+// export default function ChatScreen() {
+//   const { friendId, friendName } = useLocalSearchParams();
+//   const [messages, setMessages] = useState<Message[]>([]);
+//   const [newMessage, setNewMessage] = useState('');
+//   const [userId, setUserId] = useState<string | null>(null);
+//   const flatListRef = useRef<FlatList>(null);
+
+//   // Move getMessages to component scope so it can be reused
+//   const getMessages = async () => {
+//     try {
+//       const res = await axiosInstance.get(`/login/getMessages/${friendId}`);
+//       setMessages(res.data.messages || []);
+//     } catch (error) {
+//       console.error('Failed to load messages', error);
+//     }
+//   };
+
+//   useEffect(() => {
+//     getMessages();
+
+//     socket.emit('joinRoom', { userId });
+
+//     socket.on('receiveMessage', (message: Message) => {
+//       if (message.sender === friendId) {
+//         setMessages((prev) => [message, ...prev]);
+//       }
+//     });
+
+//     return () => {
+//       socket.off('receiveMessage');
+//     };
+//   }, [userId, friendId]);
+//   useEffect(() => {
+//     const fetchUser = async () => {
+//       const user = await AsyncStorage.getItem('user');
+//       if (user) {
+//         setUserId(JSON.parse(user)._id);
+//       }
+//     };
+//     fetchUser();
+//   }, []);
+  
+//   useEffect(() => {
+//     socket.emit('join', { userId: friendId }); // join room or user-specific event
+
+//     socket.on('newMessage', (message: Message) => {
+//       setMessages(prev => [message, ...prev]); // new message at top (FlatList is inverted)
+//     });
+
+//     return () => {
+//       socket.off('newMessage');
+//     };
+//   }, [friendId]);
+
+
+//   const sendMessage = async () => {
+
+//     if (!newMessage.trim() || !userId) return;
+//     const friendIdStr = String(friendId);
+//     const userIdStr = String(userId);
+
+//   try {
+//     await axiosInstance.post('/login/sendMessage', {
+//       receiverId: friendId,
+//       content: newMessage,
+//     });
+
+//     socket.emit('sendMessage', {
+//       receiverId: friendId,
+//       content: newMessage,
+//     });
+//     setNewMessage('');
+    
+//   } catch (err) {
+//     console.error('Failed to send message', err);
+//   }
+// };
+
+//   useEffect(() => {
+//     getMessages();
+//   }, []);
+
+//   return (
+//     <KeyboardAvoidingView
+//       style={styles.container}
+//       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+//       keyboardVerticalOffset={80}
+//     >
+//         <TouchableOpacity style={styles.backButton} onPress={() => router.push('/(home)/friends')}>
+//   <Text style={styles.backButtonText}>← </Text>
+// </TouchableOpacity>
+
+//       <Text style={styles.header}>Chat with {friendName}</Text>
+
+//     <FlatList
+//   ref={flatListRef}
+//   data={messages}
+//   inverted
+//   keyExtractor={(item) => item._id}
+//   renderItem={({ item }) => {
+//     const isSender = item.sender === friendId;
+//     return (
+//       <View
+//         style={[
+//           styles.messageContainer,
+//           isSender ? styles.sender : styles.receiver,
+//         ]}
+//       >
+//         <Text style={styles.messageText}>{item.content}</Text>
+//       </View>
+//     );
+//   }}
+//   contentContainerStyle={{ paddingBottom: 10 }}
+  
+// />
+
+//       <View style={styles.inputContainer}>
+//         <TextInput
+//           style={styles.input}
+//           placeholder="Type a message..."
+//           placeholderTextColor="#999"
+//           value={newMessage}
+//           onChangeText={setNewMessage}
+//         />
+//         <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+//           <Text style={styles.sendText}>Send</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </KeyboardAvoidingView>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#1E1E1E',
+//     padding: 10,
+//   },
+//   header: {
+//     fontSize: 22,
+//     fontWeight: 'bold',
+//     color: '#FEE1B6',
+//     marginBottom: 10,
+//     textAlign: 'center',
+//     textShadowColor: '#FEE1B6AA',
+//     textShadowOffset: { width: 1, height: 1 },
+//     textShadowRadius: 8,
+//   },
+//   messageContainer: {
+//     padding: 12,
+//     marginVertical: 6,
+//     maxWidth: '75%',
+//     borderRadius: 18,
+//     shadowColor: '#FEE1B6',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.2,
+//     shadowRadius: 4,
+//     elevation: 4,
+//   },
+//   sender: {
+//     backgroundColor: '#FEE1B6',
+//     alignSelf: 'flex-end',
+//     borderTopRightRadius: 0,
+//   },
+//   receiver: {
+//     backgroundColor: '#D1C2FA',
+//     alignSelf: 'flex-start',
+//     borderTopLeftRadius: 0,
+//   },
+//   messageText: {
+//     color: '#1E1E1E',
+//     fontSize: 16,
+//   },
+//   inputContainer: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     marginTop: 10,
+//     borderTopWidth: 1,
+//     borderTopColor: '#333',
+//     paddingTop: 10,
+//   },
+//   input: {
+//     flex: 1,
+//     backgroundColor: '#2B2B2B',
+//     padding: 12,
+//     borderRadius: 24,
+//     marginRight: 10,
+//     color: '#FFF',
+//     borderColor: '#888',
+//     borderWidth: 1,
+//   },
+//   sendButton: {
+//     backgroundColor: '#FEE1B6',
+//     paddingVertical: 10,
+//     paddingHorizontal: 18,
+//     borderRadius: 24,
+//     shadowColor: '#FEE1B6',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.6,
+//     shadowRadius: 6,
+//     elevation: 6,
+//   },
+//   sendText: {
+//     color: '#1E1E1E',
+//     fontWeight: 'bold',
+//     fontSize: 16,
+//   },
+//   backButton: {
+//     paddingVertical: 6,
+//     paddingHorizontal: 12,
+//     alignSelf: 'flex-start',
+//     backgroundColor: '#FEE1B6',
+//     borderRadius: 8,
+//     marginBottom: 8,
+//     shadowColor: '#FEE1B6',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.5,
+//     shadowRadius: 4,
+//     elevation: 4,
+//   },
+//   backButtonText: {
+//     color: '#1E1E1E',
+//     fontWeight: '600',
+//     fontSize: 16,
+//   },
+// });
+
+
+
+
+
+
 import io from 'socket.io-client';
 import { useLocalSearchParams } from 'expo-router';
 import {
@@ -18,7 +281,6 @@ import {
 import { useEffect, useRef, useState } from 'react';
 import axiosInstance from '../axiosInstance';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 const router = useRouter();
 const socket = useRef<any>(null);
 
@@ -35,7 +297,6 @@ export default function ChatScreen() {
   const { friendId, friendName } = useLocalSearchParams();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [userId, setUserId] = useState<string | null>(null);
   const flatListRef = useRef<FlatList>(null);
 
   const getMessages = async () => {
@@ -48,19 +309,10 @@ export default function ChatScreen() {
       console.error('Failed to load messages', error);
     }
   };
-  useEffect(() => {
-    const fetchUser = async () => {
-      const user = await AsyncStorage.getItem('user');
-      if (user) {
-        setUserId(JSON.parse(user)._id);
-      }
-    };
-    fetchUser();
-  }, []);
   
   useEffect(() => {
-  socket.current = io('http:// 10.61.4.86:3000'); // replace with your actual server URL
-  socket.current.emit('join', { userId: friendId }); // join room or user-specific event
+  socket.current = io('http://10.61.90.94:3000'); // replace with your actual server URL
+  socket.current.emit('joinRoom', { userId: friendId }); // join room or user-specific event
 
   socket.current.on('newMessage', (message: Message) => {
     setMessages(prev => [message, ...prev]); // new message at top (FlatList is inverted)
@@ -115,7 +367,7 @@ export default function ChatScreen() {
   inverted
   keyExtractor={(item) => item._id}
   renderItem={({ item }) => {
-    const isSender = item.sender === friendId;
+    const isSender = item.sender !== friendId;
     return (
       <View
         style={[
@@ -150,29 +402,21 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#2F2F2F',
     padding: 10,
   },
   header: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#FEE1B6',
     marginBottom: 10,
     textAlign: 'center',
-    textShadowColor: '#FEE1B6AA',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 8,
   },
   messageContainer: {
-    padding: 12,
-    marginVertical: 6,
+    padding: 10,
+    marginVertical: 5,
     maxWidth: '75%',
-    borderRadius: 18,
-    shadowColor: '#FEE1B6',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
+    borderRadius: 10,
   },
   sender: {
     backgroundColor: '#FEE1B6',
@@ -180,12 +424,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 0,
   },
   receiver: {
-    backgroundColor: '#D1C2FA',
+    backgroundColor: '#EEDEF6',
     alignSelf: 'flex-start',
     borderTopLeftRadius: 0,
   },
   messageText: {
-    color: '#1E1E1E',
+    color: '#2F2F2F',
     fontSize: 16,
   },
   inputContainer: {
@@ -193,51 +437,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#333',
+    borderTopColor: '#444',
     paddingTop: 10,
   },
   input: {
     flex: 1,
-    backgroundColor: '#2B2B2B',
-    padding: 12,
-    borderRadius: 24,
+    backgroundColor: '#fff',
+    padding: 10,
+    borderRadius: 20,
     marginRight: 10,
-    color: '#FFF',
-    borderColor: '#888',
-    borderWidth: 1,
+    color: '#000',
   },
   sendButton: {
     backgroundColor: '#FEE1B6',
     paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 24,
-    shadowColor: '#FEE1B6',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.6,
-    shadowRadius: 6,
-    elevation: 6,
+    paddingHorizontal: 16,
+    borderRadius: 20,
   },
   sendText: {
-    color: '#1E1E1E',
+    color: '#2F2F2F',
     fontWeight: 'bold',
-    fontSize: 16,
   },
   backButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    alignSelf: 'flex-start',
-    backgroundColor: '#FEE1B6',
-    borderRadius: 8,
-    marginBottom: 8,
-    shadowColor: '#FEE1B6',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  backButtonText: {
-    color: '#1E1E1E',
-    fontWeight: '600',
-    fontSize: 16,
-  },
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  alignSelf: 'flex-start',
+  backgroundColor: '#FEE1B6',
+  borderRadius: 6,
+  marginBottom: 8,
+},
+backButtonText: {
+  color: '#2F2F2F',
+  fontWeight: '600',
+  fontSize: 16,
+},
+
 });

@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  SafeAreaView,
-  ActivityIndicator,
-  Image,
-  TouchableOpacity,
+  View, Text, ScrollView, StyleSheet, SafeAreaView, ActivityIndicator,
+  Image, TouchableOpacity,
 } from 'react-native';
 import axiosInstance from '../../app/axiosInstance';
-import { useRouter } from 'expo-router';
+import Animated, { FadeInUp } from 'react-native-reanimated';
 
 type Post = {
   _id: string;
@@ -30,8 +24,7 @@ export default function YourPost() {
   const getPosts = async () => {
     try {
       const response = await axiosInstance.get('/login/getMyPosts');
-      const data = response.data;
-      setPosts(data.posts);
+      setPosts(response.data.posts);
     } catch (error) {
       console.log('Error fetching your posts', error);
     } finally {
@@ -39,27 +32,23 @@ export default function YourPost() {
     }
   };
 
-
-
   useEffect(() => {
     getPosts();
   }, []);
 
-
   return (
     <SafeAreaView style={styles.container}>
       {loading ? (
-        <ActivityIndicator size="large" color="#007acc" />
+        <ActivityIndicator size="large" color="#a78bfa" style={{ marginTop: 50 }} />
       ) : posts.length === 0 ? (
         <Text style={styles.emptyText}>No posts available.</Text>
       ) : (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {posts.map((item) => (
-            <View key={item._id} style={styles.card}>
+          {posts.map((item, index) => (
+            <Animated.View key={item._id} style={styles.card} entering={FadeInUp.delay(index * 100)}>
               {item.image && (
                 <Image source={{ uri: item.image }} style={styles.postImage} resizeMode="cover" />
               )}
-
               <Text style={styles.title}>{item.serviceId?.name || 'Service Name'}</Text>
               <Text style={styles.description}>{item.desc}</Text>
 
@@ -89,7 +78,7 @@ export default function YourPost() {
               <TouchableOpacity style={styles.buyButton}>
                 <Text style={styles.buyButtonText}>Buy Now</Text>
               </TouchableOpacity>
-            </View>
+            </Animated.View>
           ))}
         </ScrollView>
       )}
@@ -100,38 +89,41 @@ export default function YourPost() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f2f6fc',
+    backgroundColor: '#0f0f1a',
   },
   scrollContainer: {
     padding: 16,
     paddingBottom: 32,
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#1a1a2e',
     borderRadius: 16,
     padding: 16,
     marginBottom: 20,
-    shadowColor: '#4a90e2',
+    shadowColor: '#a78bfa',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 4,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: '#a78bfa55',
   },
   postImage: {
     width: '100%',
     height: 180,
     borderRadius: 12,
     marginBottom: 12,
+    backgroundColor: '#333',
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
-    color: '#003366',
+    color: '#f0e6ff',
     marginBottom: 6,
   },
   description: {
     fontSize: 14,
-    color: '#444',
+    color: '#ccc',
     marginBottom: 12,
     lineHeight: 20,
   },
@@ -142,27 +134,27 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#003366',
+    color: '#a78bfa',
     marginRight: 6,
   },
   detailValue: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#0056b3',
+    color: '#4afcb1',
   },
   referredText: {
     fontSize: 13,
     fontStyle: 'italic',
-    color: '#cc0066',
+    color: '#ff79c6',
     marginTop: 4,
   },
   buyButton: {
     marginTop: 12,
-    backgroundColor: '#ff6b81',
+    backgroundColor: '#a78bfa',
     paddingVertical: 10,
     borderRadius: 10,
     alignItems: 'center',
-    shadowColor: '#ff4d6d',
+    shadowColor: '#a78bfa',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
@@ -171,12 +163,12 @@ const styles = StyleSheet.create({
   buyButtonText: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#fff',
+    color: '#1a1a2e',
   },
   emptyText: {
     marginTop: 40,
     fontSize: 18,
-    color: '#888',
+    color: '#ccc',
     textAlign: 'center',
   },
 });
