@@ -42,6 +42,7 @@ const serviceSchema = new mongoose.Schema({
       message: "Reduced price must be less than original price"
     }
   },
+  
 
   dummysellerSharePercent: {
     type: Number,

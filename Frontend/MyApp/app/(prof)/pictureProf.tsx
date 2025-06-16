@@ -1,56 +1,41 @@
 import * as ImagePicker from 'expo-image-picker';
-import axios from 'axios';
-import { Image, Button, View } from 'react-native';
+import { Image, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import axiosInstance from '../axiosInstance';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 export default function ProfileScreen() {
-  const [imageUri, setImageUri] = useState(null);
+  const [imageUri, setImageUri] = useState<string | null>(null);
 
-
-const uploadImage = async (image) => {
-  console.log("uploading");
-    const userId= await AsyncStorage.getItem('userId');
-    // console.log(userId)
-    // const user=JSON.parse(userString);
-    // const userId=user.id;
-
+  const uploadImage = async (image: { uri: string }) => {
+    const userId = await AsyncStorage.getItem('userId');
     const formData = new FormData();
     formData.append('profilePicture', {
       uri: image.uri,
       name: `profile-${Date.now()}.jpg`,
       type: 'image/jpeg',
     } as any);
-    console.log(formData)
 
     try {
-      console.log(userId);
-      const res = await axiosInstance.post(
+      await axiosInstance.post(
         `/login/updateProfilePicture/${userId}`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
-       
-      console.log("uploaded");
       alert('Uploaded successfully!');
     } catch (err) {
       console.error('Upload failed:', err);
+      alert('Upload failed');
     }
-};
+  };
 
-  
-  
-
-const pickImage = async () => {
-    console.log("picking image");
-
+  const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permission.status !== 'granted') {
       alert('Permission required');
       return;
     }
-    console.log(permission)
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -59,20 +44,70 @@ const pickImage = async () => {
     });
 
     if (!result.canceled) {
-      console.log(result);
-      setImageUri(result.assets[0].uri);
-      console.log("before upload");
-      console.log(result.assets);
-      uploadImage(result.assets[0]);
+      const selected = result.assets[0];
+      setImageUri(selected.uri);
+      uploadImage(selected);
     }
-};
+  };
 
-  
   return (
-    <View>
-      <Button title="Pick Profile Picture" onPress={pickImage}/> 
-      {imageUri && <Image source={{ uri: imageUri }} style={{ width: 100, height: 100 }} />}
-   
+    <View style={styles.container}>
+      <Animated.View entering={FadeInDown}>
+        <TouchableOpacity style={styles.glowButton} onPress={pickImage}>
+          <Text style={styles.glowButtonText}>Pick Profile Picture</Text>
+        </TouchableOpacity>
+      </Animated.View>
+
+      {imageUri && (
+        <Animated.View entering={FadeInDown.delay(200)} style={styles.imagePreview}>
+          <Image source={{ uri: imageUri }} style={styles.image} />
+          <Text style={styles.previewText}>Profile Preview</Text>
+        </Animated.View>
+      )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0e0e1c',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  glowButton: {
+    backgroundColor: '#6c63ff',
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    borderRadius: 14,
+    shadowColor: '#9d8bff',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.6,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  glowButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  imagePreview: {
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  image: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 3,
+    borderColor: '#a78bfa',
+  },
+  previewText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: '#c7bdfc',
+    fontStyle: 'italic',
+  },
+});

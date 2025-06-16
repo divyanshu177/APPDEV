@@ -1,126 +1,166 @@
-import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, KeyboardAvoidingView, Platform, Image } from 'react-native';
+
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  StatusBar,
+} from 'react-native';
+import { Video, ResizeMode } from 'expo-av';
 import * as Animatable from 'react-native-animatable';
 import { router } from 'expo-router';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native'; 
 
-
+const videoUrl = 'https://videos.pexels.com/video-files/3141210/3141210-sd_640_360_25fps.mp4';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigation = useNavigation();
-  
+
   const handleLogin = () => {
-    axios.post('http://10.61.89.72:3000/login', { email, password })
+    axios.post('http://10.61.90.94:3000/login', { email, password })
       .then(async (response) => {
-        const { token, user } = response.data; 
-        console.log(user)
-
-
-        if (token) {
+        const { token, user } = response.data;
+        if (token && user) {
           await AsyncStorage.setItem('userToken', token);
-          console.log('Token stored successfully:', token);
-          router.replace('/(home)'); 
+          await AsyncStorage.setItem('user', JSON.stringify(user));
+          router.replace('/(home)');
+        } else {
+          alert('Invalid login response from server');
         }
-         await AsyncStorage.setItem('userId',user.id);
-          console.log('User ID stored successfully:', user.id);
-        console.log('Login successful:', response.data);
       })
-      
-
+      .catch(err => {
+        console.error('Login error:', err);
+        alert('Login failed, please check credentials.');
+      });
   };
 
   return (
     <View style={styles.container}>
-      <StatusBar backgroundColor="#EEDEF6" barStyle="dark-content" />
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
-      <Animatable.Text animation="fadeInDown" style={styles.title}>
-        Welcome Back
-      </Animatable.Text>
+      <Video
+        source={{ uri: videoUrl }}
+        style={StyleSheet.absoluteFillObject}
+        resizeMode={ResizeMode.COVER}
+        shouldPlay
+        isLooping
+        isMuted
+      />
 
-      <Animatable.Text animation="fadeInDown" delay={200} style={styles.subtitle}>
-        Sign in to your account
-        {' '}{' '}
-        
-        <Text style={{ color: 'blue' }} onPress={() => router.push('/signup')}>
-          Sign Up
+      <View style={styles.overlay} />
+
+      <Animatable.View animation="fadeInUp" delay={200} style={styles.formContainer}>
+        <Text style={styles.title}>Welcome Back</Text>
+        <Text style={styles.subtitle}>
+          Sign in to your account{' '}
+          <Text style={styles.link} onPress={() => router.push('/signup')}>
+            Sign Up
+          </Text>
         </Text>
-      </Animatable.Text>
 
-      <Animatable.View animation="fadeInUp" delay={400} style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#2F2F2F"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#2F2F2F"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
+        <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="#DDD"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor="#DDD"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Login</Text>
+          </TouchableOpacity>
+        </View>
       </Animatable.View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#EEDEF6',
+    position: 'relative',
+    backgroundColor: '#000',
     justifyContent: 'center',
-    paddingHorizontal: 30,
+  },
+  backgroundVideo: {
+  ...StyleSheet.absoluteFillObject,
+},
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  formContainer: {
+    flex: 1,
+    paddingHorizontal: 24,
+    justifyContent: 'center',
   },
   title: {
     fontSize: 34,
     fontWeight: 'bold',
-    color: '#2F2F2F',
+    color: '#FFF',
     textAlign: 'center',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#2F2F2F',
+    color: '#EEE',
     textAlign: 'center',
-    marginBottom: 25,
+    marginBottom: 20,
+  },
+  link: {
+    color: '#50D9C4',
+    fontWeight: '600',
   },
   form: {
-    backgroundColor: '#CCE5E3',
+    backgroundColor: 'rgba(255,255,255,0.15)',
     padding: 20,
-    borderRadius: 20,
-    elevation: 5,
+    borderRadius: 18,
+     borderColor: 'rgba(255,255,255,0.2)',
+  borderWidth: 1,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.3,
+  shadowRadius: 10,
+  elevation: 8,
   },
   input: {
     height: 50,
-    borderColor: '#FEE1B6',
+    borderColor: 'rgba(255,255,255,0.6)',
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 12,
     paddingHorizontal: 15,
-    backgroundColor: '#fff',
-    marginBottom: 15,
-    color: '#2F2F2F',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    marginBottom: 16,
+    color: '#FFF',
+    fontSize: 16,
   },
   button: {
-    backgroundColor: '#FEE1B6',
-    paddingVertical: 15,
-    borderRadius: 10,
+    backgroundColor: '#50D9C4',
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 6,
+    elevation: 3,
   },
   buttonText: {
-    color: '#2F2F2F',
+    color: '#1E1E1E',
     fontSize: 18,
     fontWeight: 'bold',
   },
 });
+
 export default Login;
+

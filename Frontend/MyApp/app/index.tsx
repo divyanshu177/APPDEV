@@ -12,9 +12,7 @@ import {
 } from '@expo-google-fonts/poppins';
 
 const { width, height } = Dimensions.get('window');
-
-// @ts-ignore
-import logo from '../assets/images/Earnn .jpg';
+import logo from '../assets/images/b.png';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -39,6 +37,7 @@ export default function HomeScreen() {
     <View style={styles.container}>
       {/* Background Video */}
       <Video
+      
         source={{ uri: 'https://cdn.pixabay.com/video/2024/04/15/208082_large.mp4' }}
         rate={1.0}
         volume={1.0}
@@ -86,8 +85,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 200,
+    height: 200,
     marginBottom: 20,
   },
   title: {

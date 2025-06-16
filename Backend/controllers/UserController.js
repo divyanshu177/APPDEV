@@ -8,7 +8,7 @@ const fs = require('fs')
 
 const searchUser = async(req, res) =>{
     try{
-        username= req.body.name;
+        const username = req.query.query;
         console.log("Searching for user with username:", username);
         const user = await User.find({
             name: { $regex: username, $options: 'i' }
@@ -16,7 +16,7 @@ const searchUser = async(req, res) =>{
         if(!user || user.length === 0){
             return res.status(404).json({message: "User not found"});
         }
-        return res.status(200).json({message: "User found", user});
+        return res.status(200).json({message: "User found", users: user});
     }
     catch(e){
         console.error("Error searching user:", e);
@@ -80,6 +80,23 @@ const getAllUsers = async (req, res) => {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
+const viewUserProfile = async (req, res) => {
+  try {
+   // const { userId } = req.body;
+   const userId = req.params.id;
+    const profile = await User.findById(userId).select('-password');
+    if (!profile) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    return res.status(200).json({ message: 'User profile found', profile });
+  } catch (error) {
+    console.error('Error viewing user profile:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
 
 
 const uploadProfile = async (req, res) => {
@@ -124,5 +141,6 @@ module.exports = {
     searchPost,
     getProfile,
     getAllUsers,
+    viewUserProfile,
     uploadProfile
 };

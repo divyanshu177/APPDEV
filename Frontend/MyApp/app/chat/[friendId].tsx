@@ -1,4 +1,5 @@
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import io from 'socket.io-client';
+import { useLocalSearchParams } from 'expo-router';
 import {
   View,
   Text,
@@ -8,22 +9,21 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import axiosInstance from '../axiosInstance';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { io } from 'socket.io-client';
+import { useRouter } from 'expo-router';
+const router = useRouter();
+const socket = useRef<any>(null);
 
-const socket = io("http://10.61.89.72:3000", {
-  transports: ['websocket'], 
-});
 
 type Message = {
-  _id?: string;
+  _id: string;
   sender: string;
   receiver: string;
   content: string;
-  timestamp?: string;
+  timestamp: string;
 };
 
 export default function ChatScreen() {
@@ -31,79 +31,56 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const flatListRef = useRef<FlatList>(null);
-  const [userId, setUserId] = useState<string | null>(null);
-  const router = useRouter();
 
-  useEffect(() => {
-    const fetchUserId = async () => {
-      const storedId = await AsyncStorage.getItem('userId');
-      console.log('Fetched userId:', storedId);
-      setUserId(storedId);
-    };
-    fetchUserId();
-  }, []);
-
-  useEffect(() => {
-    if (!userId) return;
-
-    const getMessages = async () => {
-      try {
-        const res = await axiosInstance.get(`/login/getMessages/${friendId}`);
-        setMessages(res.data.messages || []);
-      } catch (error) {
-        console.error('Failed to load messages', error);
-      }
-    };
-
-    getMessages();
-
-    socket.emit('joinRoom', { userId });
-
-    socket.on('receiveMessage', (message: Message) => {
-      if (message.sender === friendId) {
-        setMessages((prev) => [message, ...prev]);
-      }
-    });
-
-    return () => {
-      socket.off('receiveMessage');
-    };
-  }, [userId]);
-
-  const sendMessage = async () => {
-
-    if (!newMessage.trim() || !userId) return;
-    const friendIdStr = String(friendId);
-    const userIdStr = String(userId);
-
+  const getMessages = async () => {
     try {
-      console.log('Sending:', { senderId: userId, receiverId: friendId, content: newMessage });
+      const res = await axiosInstance.get(`/login/getMessages/${friendId}`);
+      console.log("Friend ID:", friendId);
 
-      await axiosInstance.post('/login/sendMessage', {
-        receiverId: friendId,
-        content: newMessage,
-      });
-
-      socket.emit('sendMessage', {
-        senderId: userId,
-        receiverId: friendId,
-        content: newMessage,
-      });
-
-      setMessages((prev) => [
-        {
-          sender: userId,
-          receiver: friendId as string,
-          content: newMessage,
-        },
-        ...prev,
-      ]);
-
-      setNewMessage('');
-    } catch (err) {
-      console.error('Failed to send message', err);
+      setMessages(res.data.messages || []);
+    } catch (error) {
+      console.error('Failed to load messages', error);
     }
   };
+  
+  useEffect(() => {
+  socket.current = io('http://10.61.90.94:3000'); // replace with your actual server URL
+  socket.current.emit('joinRoom', { userId: friendId }); // join room or user-specific event
+
+  socket.current.on('newMessage', (message: Message) => {
+    setMessages(prev => [message, ...prev]); // new message at top (FlatList is inverted)
+  });
+
+  return () => {
+    socket.current.disconnect();
+  };
+  }, []);
+
+
+  const sendMessage = async () => {
+    if (!newMessage.trim()) return;
+
+  try {
+    await axiosInstance.post('/login/sendMessage', {
+      receiverId: friendId,
+      content: newMessage,
+    });
+
+    socket.current.emit('sendMessage', {
+      receiverId: friendId,
+      content: newMessage,
+    });
+
+    setNewMessage('');
+    getMessages();
+  } catch (err) {
+    console.error('Failed to send message', err);
+  }
+};
+
+  useEffect(() => {
+    getMessages();
+  }, []);
 
   return (
     <KeyboardAvoidingView
@@ -111,36 +88,33 @@ export default function ChatScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={80}
     >
-      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/(home)/friends')}>
-        <Text style={styles.backButtonText}>←</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.backButton} onPress={() => router.push('/(home)/friends')}>
+  <Text style={styles.backButtonText}>← </Text>
+</TouchableOpacity>
 
       <Text style={styles.header}>Chat with {friendName}</Text>
 
-      {userId ? (
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          inverted
-          keyExtractor={(item, index) => item._id || index.toString()}
-          renderItem={({ item }) => {
-            const isSender = item.sender === userId;
-            return (
-              <View
-                style={[
-                  styles.messageContainer,
-                  isSender ? styles.sender : styles.receiver,
-                ]}
-              >
-                <Text style={styles.messageText}>{item.content}</Text>
-              </View>
-            );
-          }}
-          contentContainerStyle={{ paddingBottom: 10 }}
-        />
-      ) : (
-        <Text style={{ color: '#fff', textAlign: 'center' }}>Loading messages...</Text>
-      )}
+    <FlatList
+  ref={flatListRef}
+  data={messages}
+  inverted
+  keyExtractor={(item) => item._id}
+  renderItem={({ item }) => {
+    const isSender = item.sender !== friendId;
+    return (
+      <View
+        style={[
+          styles.messageContainer,
+          isSender ? styles.sender : styles.receiver,
+        ]}
+      >
+        <Text style={styles.messageText}>{item.content}</Text>
+      </View>
+    );
+  }}
+  contentContainerStyle={{ paddingBottom: 10 }}
+  
+/>
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -218,16 +192,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   backButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    alignSelf: 'flex-start',
-    backgroundColor: '#FEE1B6',
-    borderRadius: 6,
-    marginBottom: 8,
-  },
-  backButtonText: {
-    color: '#2F2F2F',
-    fontWeight: '600',
-    fontSize: 16,
-  },
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  alignSelf: 'flex-start',
+  backgroundColor: '#FEE1B6',
+  borderRadius: 6,
+  marginBottom: 8,
+},
+backButtonText: {
+  color: '#2F2F2F',
+  fontWeight: '600',
+  fontSize: 16,
+},
+
 });
