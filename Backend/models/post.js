@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const service = require('./service');
 
+
 const postSchema = new mongoose.Schema({
     serviceId:{
         type: mongoose.Schema.Types.ObjectId,
@@ -49,7 +50,4 @@ const postSchema = new mongoose.Schema({
 });
 
 
-
-const Post = mongoose.model('Post', postSchema);
-
-module.exports = Post;
+module.exports = mongoose.model('Post', postSchema);

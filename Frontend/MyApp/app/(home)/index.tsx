@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, StyleSheet, SafeAreaView,
   ActivityIndicator, Image, TextInput, TouchableOpacity,
+  FlatList
 } from 'react-native';
 import axiosInstance from '../axiosInstance';
 import { FontAwesome } from '@expo/vector-icons';
@@ -11,11 +12,11 @@ import { useRouter } from 'expo-router';
 type Post = {
   dummysellerId: any;
   _id: string;
-  image?: string;
+  image?: string[];
   desc: string;
   cost: number;
-  serviceId?: { name?: string; _id?:string };
-  sellerId?: { name?: string; _id?:string };
+  serviceId?: { name?: string; _id?: string };
+  sellerId?: { name?: string; _id?: string };
   dummyseller?: number;
   dummysellerId?: { name?: string; _id?: string };
 };
@@ -25,7 +26,6 @@ const HomePage = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
- 
 
   const fetchAllPosts = async () => {
     setLoading(true);
@@ -86,25 +86,37 @@ const HomePage = () => {
           <View style={styles.postContainerWrapper}>
             {posts.map((item) => (
               <View key={item._id} style={styles.card}>
-                {item.image && (
-                  <Image source={{ uri: item.image }} style={styles.postImage} resizeMode="cover" />
+
+                {item.image && Array.isArray(item.image) && item.image.length > 0 ? (
+                  <FlatList
+                    data={item.image}
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    keyExtractor={(imgUri, index) => index.toString()}
+                    renderItem={({ item: imgUri }) => (
+                      <Image
+                        source={{ uri: imgUri }}
+                        style={styles.postImage}
+                        resizeMode="cover"
+                      />
+                    )}
+                  />
+                ) : (
+                  <Text style={{ color: '#ccc' }}>No images available.</Text>
                 )}
+
                 <Text style={styles.title}>{item.serviceId?.name || 'Service Name'}</Text>
                 <Text style={styles.description}>{item.desc}</Text>
 
                 <View style={styles.detailsRow}>
-  <Text style={styles.detailLabel}>sellerName:</Text>
-
-
-
-
-  <TouchableOpacity onPress={() => router.push(`/(prof)/user/${item.sellerId?._id}`)}>
-    <Text style={[styles.detailValue, styles.linkText]}>
-      {item.sellerId?.name || 'Unknown'}
-    </Text>
-  </TouchableOpacity>
-</View>
-
+                  <Text style={styles.detailLabel}>sellerName:</Text>
+                  <TouchableOpacity onPress={() => router.push(`/(prof)/user/${item.sellerId?._id}`)}>
+                    <Text style={[styles.detailValue, styles.linkText]}>
+                      {item.sellerId?.name || 'Unknown'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
 
                 {item.dummysellerId === 1 && item.dummysellerId && (
                   <View style={styles.detailsRow}>
@@ -125,22 +137,22 @@ const HomePage = () => {
                 )}
 
                 <TouchableOpacity
-  style={[styles.buyButton, { marginTop: 12 }]}
- onPress={() => router.push({
-  pathname: '/(prof)/PaymentScreen',
-  params: { cost: item.cost,
-            sellerId:item.sellerId?._id,
-            serviceId:item.serviceId?._id,
-            dummySellerId:item.dummysellerId?._id 
+                  style={[styles.buyButton, { marginTop: 12 }]}
+                  onPress={() => router.push({
+                    pathname: '/(prof)/PaymentScreen',
+                    params: {
+                      cost: item.cost,
+                      sellerId: item.sellerId?._id,
+                      serviceId: item.serviceId?._id,
+                      dummySellerId: item.dummysellerId?._id
+                    }
+                  })}
+                >
+                  <Text style={styles.buyButtonText}>BUY NOW</Text>
+                </TouchableOpacity>
 
-   }
-})}
->
-  <Text style={styles.buyButtonText}>BUY NOW</Text>
-</TouchableOpacity>
-
-            </View>
-          ))}
+              </View>
+            ))}
           </View>
         </ScrollView>
       )}
@@ -153,7 +165,10 @@ export default HomePage;
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#0A0A0A', position: 'relative' },
   backgroundGlow: { ...StyleSheet.absoluteFillObject, backgroundColor: '#a78bfa11', zIndex: -1 },
-  iconButton: { padding: 6, marginRight: 8, borderRadius: 20, backgroundColor: '#2a2a2a', alignItems: 'center', justifyContent: 'center' },
+  iconButton: {
+    padding: 6, marginRight: 8, borderRadius: 20, backgroundColor: '#2a2a2a',
+    alignItems: 'center', justifyContent: 'center'
+  },
   searchContainer: {
     flexDirection: 'row', margin: 16, backgroundColor: '#1c1c2b', borderRadius: 12,
     alignItems: 'center', paddingHorizontal: 10, borderWidth: 1, borderColor: '#a78bfa',
@@ -167,13 +182,12 @@ const styles = StyleSheet.create({
   },
   scrollWrapper: { padding: 16, paddingBottom: 32, alignItems: 'center' },
   postContainerWrapper: {
-  width: '100%',
-  padding: 0,           // removed inner padding
-  borderWidth: 0,       // remove border
-  backgroundColor: 'transparent',  // no background
-  shadowColor: 'transparent',      // no shadow
-},
-
+    width: '100%',
+    padding: 0,
+    borderWidth: 0,
+    backgroundColor: 'transparent',
+    shadowColor: 'transparent',
+  },
   card: {
     backgroundColor: '#1c1c2b', borderRadius: 16, padding: 16,
     marginBottom: 20, borderColor: '#a78bfa88', borderWidth: 1,
@@ -181,8 +195,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25, shadowRadius: 10, elevation: 6
   },
   postImage: {
-    width: '100%', height: 180, borderRadius: 14, marginBottom: 12,
-    borderWidth: 1, borderColor: '#c4b5fd'
+    width: 280, // Adjusted for slider effect
+    height: 180,
+    borderRadius: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#c4b5fd',
+    alignSelf: 'center'
   },
   title: { fontSize: 20, fontWeight: '700', color: '#ffffff', marginBottom: 6 },
   description: { fontSize: 14, color: '#d1d5db', marginBottom: 12, lineHeight: 20 },

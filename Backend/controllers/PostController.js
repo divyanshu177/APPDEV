@@ -3,9 +3,10 @@ const Post = require('../models/post');
 const Service = require('../models/service');
 const createPost = async (req, res) => {
     try {
-        const {sellerId, serviceId, desc,image ,dummySellerId,serviceName,review} = req.body;
+        const {sellerId, serviceId, desc,image ,dummySellerId,review} = req.body;
         console.log("creating post");
         const service = await Service.findById(serviceId);
+        const serviceName= service.name;
  
         if (!service) {
             return res.status(404).json({ message: "Service not found" });

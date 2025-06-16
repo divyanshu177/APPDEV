@@ -20,7 +20,6 @@ export default function Create() {   // Capitalized component name (React conven
             desc: item.description,
             image: ImageUris,
             dummySellerId: id,
-            serviceName: item.name,
             review: review
         };
 

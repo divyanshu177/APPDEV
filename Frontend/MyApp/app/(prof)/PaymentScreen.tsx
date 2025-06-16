@@ -4,6 +4,7 @@ import { WebView } from 'react-native-webview';
 import axios from 'axios';
 import { useLocalSearchParams } from 'expo-router';
 import axiosInstance from '../axiosInstance';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function PaymentScreen() {
@@ -17,6 +18,9 @@ export default function PaymentScreen() {
   const handlePayment = async () => {
     try {
       console.log("handling payment")
+      const token = await AsyncStorage.getItem('userToken');
+
+    
      const { data } = await axiosInstance.post('/createPaymentLink', {
         amount: Number(cost), 
         name: 'Test User',
