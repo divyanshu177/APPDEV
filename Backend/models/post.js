@@ -30,10 +30,10 @@ const postSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    image: {
+    images: [{
         type: [String],
         required: true
-    },
+    }],
     dummyseller: {
        type:Number,
        enum: [0, 1], // 0 for no dummy seller, 1 for dummy seller

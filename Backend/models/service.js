@@ -18,10 +18,11 @@ const serviceSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  image: {
-    type: [String],
-    required: true
-  },
+images: {
+  type: [String],
+  required: true
+},
+
   seller: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

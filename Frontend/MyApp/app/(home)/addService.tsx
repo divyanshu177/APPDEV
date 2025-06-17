@@ -13,7 +13,6 @@ interface FormData {
   stock: number;
   description: string;
   category: string;
-  image: string[]; // holds image URLs
   originalPrice: number;
   reducedPrice: number;
   dummysellerSharePercent: number;
@@ -23,13 +22,13 @@ interface FormData {
 export default function AddServiceScreen() {
   const router = useRouter();
   const [localImageUri, setLocalImageUri] = useState<string[]>([]);
+  const [imageUri, setImageUri] = useState<string[]>([]); // URLs from backend
 
   const [formData, setFormData] = useState<FormData>({
     name: '',
     stock: 0,
     description: '',
     category: '',
-    image: [],
     originalPrice: 0,
     reducedPrice: 0,
     dummysellerSharePercent: 10,
@@ -46,6 +45,7 @@ export default function AddServiceScreen() {
     }));
   };
 
+ 
   const pickImage = async () => {
     console.log("picking image");
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -62,16 +62,13 @@ export default function AddServiceScreen() {
       allowsMultipleSelection: true,
     });
 
+    console.log("Image Picker Result:", result);
     if (!result.canceled) {
-      const sellerId = await AsyncStorage.getItem('userId');
-
       const formDataUpload = new FormData();
-      formDataUpload.append('sellerId', sellerId);
-
       result.assets.forEach((asset, index) => {
         formDataUpload.append('images', {
           uri: asset.uri,
-          name: `post-${index}-${Date.now()}.jpg`,
+          name: `img-${index}.jpg`,
           type: 'image/jpeg',
         } as any);
       });
@@ -80,16 +77,13 @@ export default function AddServiceScreen() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      const imageUrls = response.data.imageUrls; // Adjust this based on your backend response
+      console.log(response.data);
+
+      const imageUrls = response.data.imageUrls;
       console.log("Image URLs received:", imageUrls);
+      setImageUri(imageUrls); // store URLs for backend submission
 
-
-      setFormData((prev) => ({
-        ...prev,
-        image: imageUrls, // setting URLs received from backend
-      }));
-
-      setLocalImageUri(result.assets.map((asset) => asset.uri)); // for local preview
+      setLocalImageUri(result.assets.map((asset) => asset.uri)); // local preview
     }
   };
 
@@ -101,7 +95,19 @@ export default function AddServiceScreen() {
         Alert.alert('Error', 'User info not found. Please log in again.');
         return null;
       }
-      return { ...formData, seller: user.id };
+
+      return {
+        name: formData.name,
+        stock: formData.stock,
+        description: formData.description,
+        category: formData.category,
+        images: imageUri, // ✅ corrected key
+        originalPrice: formData.originalPrice,
+        reducedPrice: formData.reducedPrice,
+        dummysellerSharePercent: formData.dummysellerSharePercent,
+        sellerSharePercent: formData.sellerSharePercent,
+        seller: user.id,
+      };
     } catch (error) {
       console.error('Payload Error:', error);
       return null;
@@ -109,25 +115,28 @@ export default function AddServiceScreen() {
   };
 
   const postDataCreate = (response) => {
-    console.log("FormData just before creating post:", formData);
-
-    console.log("Service Created:", response.data);
     return {
-      image: formData.image, // using the same images uploaded earlier
+      images: imageUri,
       desc: formData.description,
       serviceId: response.data.service._id,
       sellerId: response.data.service.seller,
     };
   };
 
-  const handleSubmit = async (data) => {
+  const handleSubmit = async () => {
     try {
+      const data = await payload();
+      if (!data) return;
+
       console.log('Submitting service data:', data);
       const response = await axiosInstance.post('/login/addService', data);
       const postData = postDataCreate(response);
-      await axiosInstance.post('/login/createPost', postData);
+
+      const res2 = await axiosInstance.post('/login/createPost', postData);
+
       Alert.alert('Success', 'Service and Post created successfully!');
-      console.log('Post creation response:', response.data);
+      console.log('Service creation response:', response.data);
+      console.log('Post creation response:', res2.data);
     } catch (error: any) {
       console.error('Axios Error:', error.response?.data || error.message);
       Alert.alert('Error', 'Failed to add service or post. Please try again.');
@@ -138,23 +147,20 @@ export default function AddServiceScreen() {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Add New Service</Text>
 
-      {Object.keys(formData).map((key, index) => {
-        if (key === 'image') return null; // Skip image field rendering
-        return (
-          <TextInput
-            key={index}
-            style={styles.input}
-            placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
-            placeholderTextColor="#888"
-            keyboardType={
-              ['stock', 'originalPrice', 'reducedPrice', 'dummysellerSharePercent', 'sellerSharePercent']
-                .includes(key) ? 'numeric' : 'default'
-            }
-            value={String(formData[key as keyof FormData])}
-            onChangeText={(text) => handleChange(key as keyof FormData, text)}
-          />
-        );
-      })}
+      {Object.keys(formData).map((key, index) => (
+        <TextInput
+          key={index}
+          style={styles.input}
+          placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+          placeholderTextColor="#888"
+          keyboardType={
+            ['stock', 'originalPrice', 'reducedPrice', 'dummysellerSharePercent', 'sellerSharePercent']
+              .includes(key) ? 'numeric' : 'default'
+          }
+          value={String(formData[key as keyof FormData])}
+          onChangeText={(text) => handleChange(key as keyof FormData, text)}
+        />
+      ))}
 
       <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
         <Text style={styles.uploadText}>
@@ -174,12 +180,7 @@ export default function AddServiceScreen() {
         </ScrollView>
       )}
 
-      <TouchableOpacity
-        onPress={async () => {
-          const data = await payload();
-          if (data) handleSubmit(data);
-        }}
-        style={styles.button}>
+      <TouchableOpacity onPress={handleSubmit} style={styles.button}>
         <Text style={styles.buttonText}>Add Service</Text>
       </TouchableOpacity>
     </ScrollView>

@@ -3,9 +3,13 @@ const Post = require('../models/post');
 const Service = require('../models/service');
 
 const createPost = async (req, res) => {
+
     try {
-        const {sellerId, serviceId, desc,image ,dummySellerId,review} = req.body;
+        const {sellerId, serviceId, desc, images, dummySellerId, review} = req.body;
+        console.log("Request body:", req.body);
+
         console.log("creating post");
+       
         const service = await Service.findById(serviceId);
        
  
@@ -42,7 +46,7 @@ const createPost = async (req, res) => {
           sellerId: sellerId,
           desc: desc,
           cost: costo,
-          images:image,
+          images:images,
           serviceName: serviceName,
           dummyseller: dummySeller,
           dummysellerId: dummySellerId,
@@ -135,6 +139,7 @@ const removePost = async (req, res) => {
             return res.status(500).json({ message: "Internal server error" });
         }
     };
+    
 const displayPost = async (req, res) => {
     try {
         const posts = await Post.find()
@@ -151,6 +156,7 @@ const displayPost = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+
 const getPostByUser = async (req, res) => {
   try {
     const { userId } = req.body; // ✅ You’re sending it in body
@@ -172,10 +178,12 @@ const getPostByUser = async (req, res) => {
 };
 
 const uploadImages = (req, res) => {
+    console.log(req.formDataUpload)
+    console.log("images", req.files);
   try {
     console.log("uploading imagesss")
     const imageUrls = req.files.map(file => {
-      return `http://10.61.89.72:5000/uploads/${file.filename}`;
+      return `http://10.61.89.72:3000/uploads/${file.filename}`;
     });
 
     console.log("Image URLs:", imageUrls);

@@ -41,14 +41,15 @@ const server = http.createServer(app);
 
 // Middlewares
 app.use(cors());
-app.use(express.json({ limit: '10mb' }));  // 10 MB limit
-app.use(express.urlencoded({ limit: '10mb', extended: true }));
-
-app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 connectDb().then(() => {
   console.log("✅ Database connected");
 });
+app.use(express.json({ limit: '10mb' }));  // 10 MB limit
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+
+
 
 // Initialize Socket.IO
 const io = socket.init(server); // ✅ initialize and pass server
@@ -90,7 +91,8 @@ app.get('/login/getMyPosts', isLoggedIn, getMyPosts);
 app.post('/login/getPostByUser', isLoggedIn, getPostByUser);
 
 
-app.post('/login/uploadImages', isLoggedIn, upload.array('images', 5), uploadImages);
+app.post('/login/uploadImages',upload.any(), uploadImages);
+
 
 
 // Routes — Users
