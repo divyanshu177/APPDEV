@@ -1,6 +1,7 @@
 const Razorpay = require('razorpay');
 const User=require("../models/User");
 const Service=require("../models/service");
+const sendSMS = require('../utils/sendSMS');
 
 const instance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -67,8 +68,17 @@ const paymentSuccess = async (req, res) => {
 
             seller.walletBalance += cost;
             await seller.save();
+            return res.status(200).json({
+                message: "Wallet updated successfully",
+                seller: {
+                    _id: seller._id,
+                  cost,
+                  dummySeller: null,
 
-            console.log("Updated seller wallet:", seller.walletBalance);
+                }
+            })
+
+            
         } 
        
         else {
@@ -93,17 +103,23 @@ const paymentSuccess = async (req, res) => {
 
             console.log("Updated seller wallet:", seller.walletBalance);
             console.log("Updated dummy seller wallet:", dummySeller.walletBalance);
+
+          return res.status(200).json({
+            message: "Wallets updated successfully",
+            seller:seller._id,
+            dummySeller:dummySellerId?dummySellerId:null,
+
+            sellerShare: (service.sellerSharePercent / 100) * cost,
+            
+            dummySellerShare: (service.dummysellerSharePercent / 100) * cost
+        });
+        
+        console.log("Payment processing completed.");
+
         }
 
-        console.log("Payment processing completed.");
         
-        return res.status(200).json({
-            message: "Wallets updated successfully",
-            seller: {
-                _id: seller._id,
-                walletBalance: seller.walletBalance
-            }
-        });
+      
 
     } catch (err) {
         console.error("Error updating wallet:", err);
@@ -163,7 +179,27 @@ catch(e){
  console.error("Error getting orders:", e);
         return res.status(500).json({ message: "Internal server error" });
 }
+}
+
+const smsController= async (req, res) => {
+  try {
+    console.log("called");
+    console.log(req.body);
+    const user = await User.findById(req.body.sellerId);
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+
+    const phoneNumber = user.phone;
+    await sendSMS(phoneNumber, `Wallet increased by a payment of ₹${req.body.cost}!`);
+
+   return res.send({ message: 'SMS sent successfully' });
+  } catch (error) {
+    console.error('Error sending SMS:', error);
+    res.status(500).send({ message: 'Failed to send SMS' });
   }
+};
+  
 
 
-module.exports = { createPaymentLink, getOrders, storeOrders, paymentSuccess};
+module.exports = { createPaymentLink, getOrders, storeOrders, paymentSuccess,smsController};

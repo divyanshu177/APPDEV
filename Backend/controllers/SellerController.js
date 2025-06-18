@@ -4,33 +4,30 @@ const Service = require('../models/service');
 const addService = async (req, res) => {
   console.log("Adding service with body:", req.body);
   try {
-    
     const {
       name,
       stock,
       description,
       category,
-      image,
+      images, // ✅ match frontend's 'images'
       seller,
       originalPrice,
       reducedPrice,
-    
       dummysellerSharePercent,
       sellerSharePercent
-    } = req.body;  
-    const newService = new Service({    
+    } = req.body;
+
+    const newService = new Service({
       name,
       stock,
       description,
       category,
-      image,
+      images, // ✅ saving 'images' array
       seller,
-    
       originalPrice,
       reducedPrice,
       sellerSharePercent,
       dummysellerSharePercent
-      
     });
 
     await newService.save();
@@ -41,6 +38,7 @@ const addService = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 
 
 const removeService = async (req, res) => {

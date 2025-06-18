@@ -8,6 +8,7 @@ const isLoggedIn = require('./middlewares/isLoggedIn');
 const isAuthorized = require('./middlewares/isAuthorized');
 const socket = require('./socket'); // ✅ import socket.js
 const upload = require('./middlewares/upload');
+
 const { Server } = require('socket.io');
 
 
@@ -22,17 +23,17 @@ const {
   getFriends
 } = require('./controllers/friendController');
 const {
-  createPost, updatePost, removePost, displayPost, getPost, getMyPosts,getPostByUser
+  createPost, updatePost, removePost, displayPost, getPost, getMyPosts,getPostByUser,uploadImages
 } = require('./controllers/PostController');
 const {
-  searchUser, searchPost, getProfile, getAllUsers, viewUserProfile, uploadProfile
+  searchUser, searchPost, getProfile, getAllUsers, viewUserProfile, uploadProfile,updateName, updatePhone
 } = require('./controllers/UserController');
 const {
   sendMessage, getMessages, markAsRead, getUnreadCounts
 } = require('./controllers/chatController');
 
 // App setup
-const { createPaymentLink,storeOrders,paymentSuccess,getOrders} = require('./controllers/payController');
+const { createPaymentLink,storeOrders,paymentSuccess,getOrders,smsController} = require('./controllers/payController');
 
 
 const app = express();
@@ -40,13 +41,15 @@ const server = http.createServer(app);
 
 // Middlewares
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 connectDb().then(() => {
   console.log("✅ Database connected");
 });
+app.use(express.json({ limit: '10mb' }));  // 10 MB limit
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+
+
 
 // Initialize Socket.IO
 const io = socket.init(server); // ✅ initialize and pass server
@@ -79,7 +82,7 @@ app.get('/login/getFriends', isLoggedIn, getFriends);
 
 // Routes — Posts
 
-app.post('/login/createPost', isLoggedIn, createPost);
+app.post('/login/createPost',  createPost);
 app.put('/login/updatePost/:postId', isLoggedIn, updatePost);
 app.get('/login/displayPost', isLoggedIn, displayPost);
 app.delete('/login/removePost/:postId', isLoggedIn, removePost);
@@ -87,8 +90,14 @@ app.get('/login/getPost/:postId', isLoggedIn, getPost);
 app.get('/login/getMyPosts', isLoggedIn, getMyPosts);
 app.post('/login/getPostByUser', isLoggedIn, getPostByUser);
 
-// Routes — Users
 
+app.post('/login/uploadImages',upload.any(), uploadImages);
+
+
+
+// Routes — Users
+app.post('/login/updateName', isLoggedIn, updateName);
+app.post('/login/updatePhone', isLoggedIn, updatePhone);
 app.get('/login/searchUser', isLoggedIn, searchUser);
 app.get('/login/searchPost', isLoggedIn, searchPost);
 app.get('/login/getProfile', isLoggedIn, getProfile);
@@ -111,10 +120,10 @@ app.post('/login/paymentSuccess',isLoggedIn,paymentSuccess);
 app.post('/login/storeOrders',isLoggedIn,storeOrders);
 app.get('/login/getOrders',isLoggedIn,getOrders);
 
+app.post('/sendWelcome',smsController);
 
-//app.post('/login/paymentSuccess',isLoggedIn,paymentSuccess);
-//app.post('/login/storeOrders',isLoggedIn,storeOrders);
-//app.get('/login/getOrders',isLoggedIn,getOrders);
+
+
 
 const PORT = 3000;
 server.listen(PORT, () => {

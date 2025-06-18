@@ -12,6 +12,7 @@ export default function ProfileScreen() {
 
   const getposts = () => router.push('/(prof)/posts');
   const update = () => router.push('/(prof)/pictureProf');
+  const updateProfile = () => router.push('/(prof)/updateProfile');
 
     const handleLogout = async () => {
     await AsyncStorage.removeItem('userToken');
@@ -46,11 +47,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       {/* 🔓 Logout Button at Top-Right */}
-      <View style={styles.logoutTopWrapper}>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
-      </View>
+  
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity onPress={update}>
         <Text style={styles.updateLink}>🔄 Update Profile Picture</Text>
@@ -85,10 +82,13 @@ export default function ProfileScreen() {
       </Animatable.View>
 
       <Animatable.View animation="fadeInUp" delay={600} duration={600} style={styles.buttonCard}>
-        <TouchableOpacity onPress={update}>
+        <TouchableOpacity onPress={updateProfile}>
           <Text style={styles.postsText}>📝 Update Profile</Text>
         </TouchableOpacity>
       </Animatable.View>
+       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
     </ScrollView>
     </SafeAreaView>
   );
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   logoutButton: {
-    backgroundColor: '#F44336',
+    backgroundColor: '#a78bfa',
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 8,
