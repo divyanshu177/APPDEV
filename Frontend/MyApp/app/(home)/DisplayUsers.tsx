@@ -67,7 +67,6 @@ export default function DisplayUsersScreen() {
         <Text style={styles.name}>{item.name}</Text>
         <Text style={styles.email}>📧 {item.email}</Text>
         <Text style={styles.phone}>📱 {item.phone}</Text>
-        <Text style={styles.wallet}>Wallet: ₹{item.walletBalance}</Text>
         <Text style={styles.date}>Joined: {new Date(item.createdAt).toLocaleDateString()}</Text>
         <TouchableOpacity style={styles.buttonContainer} onPress={() => handleAddFriend(item)}>
           <Text style={styles.addFriendButton}>➕ Add Friend</Text>

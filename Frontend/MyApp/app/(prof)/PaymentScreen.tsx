@@ -11,7 +11,7 @@ export default function PaymentScreen() {
   const [paymentUrl, setPaymentUrl] = useState(null);
   const { cost, sellerId, serviceId, dummySellerId } = useLocalSearchParams();
   console.log(sellerId)
-  console.log("dummySellerId",dummySellerId)
+  // console.log("dummySellerId",dummySellerId)
   
 
 
@@ -42,7 +42,8 @@ export default function PaymentScreen() {
 
     try{  
       console.log(sellerId);
-    await axiosInstance.post('/login/paymentSuccess',{
+      console.log("cooooo")
+      const response=await axiosInstance.post('/login/paymentSuccess',{
       sellerId: sellerId,
       cost: Number(cost), 
       dummySellerId: dummySellerId,  
@@ -52,10 +53,41 @@ export default function PaymentScreen() {
         'Content-Type': 'application/json'
     }
 });
+    console.log('Payment success response:', response.data);
+
+    if(response.data.seller.dummySeller===null){
+      const smsA =axiosInstance.post('/sendWelcome',{
+        
+        sellerId: response.data.seller._id,
+        cost: response.data.seller.cost,
+        
+      })
+    }
+    else{
+      console.log("sms dummyseller wla")
+      const smsA =axiosInstance.post('/sendWelcome',{
+
+        
+        sellerId: response.data.seller,
+        cost: response.data.sellerShare,
+        
+      });
+      console.log('SMS sentttt successfully:', smsA);
+      const smsAB =axiosInstance.post('/sendWelcome',{
+        
+        sellerId: response.data.dummySeller,
+        cost: response.data.dummySellerShare,
+        
+      })
+      console.log('SMS sentttt successfully:', smsA);
+
+    }
+      
     }
     catch(err){
-      console.log('error in updating wallet');
+      console.log('error in payment success:', err);
     }
+
 
     try{
         await axiosInstance.post('/login/storeOrders',{

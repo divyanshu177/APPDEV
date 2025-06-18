@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, ScrollView, StyleSheet, SafeAreaView,
-  ActivityIndicator, Image, TextInput, TouchableOpacity,FlatList
+  View, Text, SafeAreaView, ActivityIndicator, Image,
+  TextInput, TouchableOpacity, FlatList, StyleSheet
 } from 'react-native';
 import axiosInstance from '../axiosInstance';
-import { FontAwesome } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 type Post = {
   _id: string;
-  image?: string;
+  images?: string[];
   desc: string;
   cost: number;
   review?: string;
@@ -18,6 +17,22 @@ type Post = {
   sellerId?: { name?: string; _id?: string };
   dummysellerId?: { name?: string; _id?: string };
 };
+
+type ImageSliderProps = {
+  images: string[];
+};
+
+const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => (
+  <FlatList
+    data={images}
+    horizontal
+    showsHorizontalScrollIndicator={false}
+    keyExtractor={(_, index) => index.toString()}
+    renderItem={({ item }) => (
+      <Image source={{ uri: item }} style={styles.postImage} />
+    )}
+  />
+);
 
 const HomePage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -30,7 +45,9 @@ const HomePage = () => {
     try {
       const response = await axiosInstance.get('/login/displayPost');
       setPosts(response.data.posts);
-    } catch {
+      console.log('Posts:', response.data.posts);
+    } catch (error) {
+      console.error('Fetch all posts error:', error);
       setPosts([]);
     } finally {
       setLoading(false);
@@ -45,7 +62,8 @@ const HomePage = () => {
         params: { serviceName: searchQuery.trim() },
       });
       setPosts(response.data.posts);
-    } catch {
+    } catch (error) {
+      console.error('Search posts error:', error);
       setPosts([]);
     } finally {
       setLoading(false);
@@ -56,61 +74,14 @@ const HomePage = () => {
 
   const goToProfile = () => router.replace('/(prof)/profile');
 
-return (
-  <SafeAreaView style={styles.container}>
-    <View style={styles.backgroundGlow} />
-
-    {/* 🔍 Search Bar */}
-    <View style={styles.searchContainer}>
-      <TouchableOpacity style={styles.iconButton} onPress={goToProfile}>
-        <Ionicons name="person-circle-outline" size={28} color="#fff" />
-      </TouchableOpacity>
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search services..."
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-        placeholderTextColor="#aaa"
-      />
-      <TouchableOpacity onPress={searchPosts} style={styles.searchButton}>
-        <FontAwesome name="search" size={20} color="#fff" />
-      </TouchableOpacity>
-    </View>
-
-    {/* 📦 Posts List */}
-    {loading ? (
-      <ActivityIndicator size="large" color="#a78bfa" />
-    ) : posts.length === 0 ? (
-      <Text style={styles.emptyText}>No posts available.</Text>
-    ) : (
-      <FlatList
-  data={posts}
-  keyExtractor={(item) => item._id}
-  contentContainerStyle={styles.scrollWrapper}
-  renderItem={({ item }) => {
-    const isDummy = !!item.dummysellerId;
+  const renderPost = ({ item }: { item: Post }) => {
+    const isDummy = Boolean(item.dummysellerId);
+    const images = isDummy ? item.images[0] : item.image; 
 
     return (
-      <View
-        style={[
-          styles.card,
-          isDummy && styles.dummyCard,
-        ]}
-      >
-        {item.image && item.image.length > 0 && (
-          <FlatList
-            data={item.image}
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(imgUri, index) => index.toString()}
-            renderItem={({ item: imgUri }) => (
-              <Image
-                source={{ uri: imgUri }}
-                style={styles.postImage}
-              />
-            )}
-          />
-        )}
+      <View style={[styles.card, isDummy && styles.dummyCard]}>
+     {Array.isArray(images) && images.length > 0 && <ImageSlider images={images} />}
+
 
         <Text style={styles.title}>{item.serviceId?.name || 'Service'}</Text>
         <Text style={styles.description}>{item.desc}</Text>
@@ -148,7 +119,7 @@ return (
             router.push({
               pathname: '/(prof)/PaymentScreen',
               params: {
-                cost: item.cost,
+                cost: item.cost.toString(),
                 sellerId: item.sellerId?._id,
                 serviceId: item.serviceId?._id,
                 dummySellerId: item.dummysellerId?._id,
@@ -160,13 +131,43 @@ return (
         </TouchableOpacity>
       </View>
     );
-  }}
-/>
+  };
 
-    )}
-  </SafeAreaView>
-);
-}
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.backgroundGlow} />
+
+      <View style={styles.searchContainer}>
+        <TouchableOpacity style={styles.iconButton} onPress={goToProfile}>
+          <Ionicons name="person-circle-outline" size={28} color="#fff" />
+        </TouchableOpacity>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search services..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholderTextColor="#aaa"
+        />
+        <TouchableOpacity onPress={searchPosts} style={styles.searchButton}>
+          <FontAwesome name="search" size={20} color="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      {loading ? (
+        <ActivityIndicator size="large" color="#a78bfa" />
+      ) : posts.length === 0 ? (
+        <Text style={styles.emptyText}>No posts available.</Text>
+      ) : (
+        <FlatList
+          data={posts}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={styles.scrollWrapper}
+          renderItem={renderPost}
+        />
+      )}
+    </SafeAreaView>
+  );
+};
 
 export default HomePage;
 
@@ -194,13 +195,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#2c1d44', borderColor: '#c084fc',
   },
   postImage: {
-    width: 250,   // ✅ Fixed width, because inside horizontal FlatList '100%' breaks
-    height: 180,  // ✅ Fixed height
+    width: 250,
+    height: 180,
     borderRadius: 12,
     marginRight: 10,
     borderWidth: 1,
     borderColor: '#c4b5fd',
-    resizeMode: 'cover', // ✅ Important for proper image rendering
+    resizeMode: 'cover',
   },
   title: { fontSize: 20, fontWeight: '700', color: '#ffffff', marginBottom: 6 },
   description: { fontSize: 14, color: '#d1d5db', marginBottom: 12 },

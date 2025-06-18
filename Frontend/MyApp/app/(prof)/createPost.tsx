@@ -21,9 +21,11 @@ export default function Create() {
 
   const handleAddPost = async () => {
     try {
-      const id = await AsyncStorage.getItem('userId');
-      if (!id) {
-        Alert.alert('Error', 'User not logged in');
+      const user = await AsyncStorage.getItem('user');
+      console.log("User from AsyncStorage:", user);
+      const user1 = JSON.parse(user || '{}');
+      if (!user) {
+        Alert.alert('Error', 'User kha h');
         return;
       }
 
@@ -32,7 +34,7 @@ export default function Create() {
         sellerId: item.seller,
         desc: item.description,
         images: ImageUri,
-        dummySellerId: id,
+        dummySellerId: user1.id,
         review: review
       };
 
@@ -69,7 +71,7 @@ export default function Create() {
             uri: asset.uri,
             name: `img-${index}.jpg`,
             type: 'image/jpeg'
-          } as any); // 'as any' necessary due to FormData limitation in React Native
+          } as any);
         });
 
         const response = await axiosInstance.post('/login/uploadImages', formDataUpload, {
@@ -89,6 +91,7 @@ export default function Create() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Create Post</Text>
+      
       <TextInput
         style={styles.input}
         placeholder="Write your review here..."
@@ -112,7 +115,10 @@ export default function Create() {
         ))}
       </View>
 
-      <TouchableOpacity style={[styles.button, { backgroundColor: '#00ffff' }]} onPress={handleAddPost}>
+      <TouchableOpacity
+        style={[styles.button, { backgroundColor: '#00ffff' }]}
+        onPress={handleAddPost}
+      >
         <Text style={styles.buttonText}>Add Post</Text>
       </TouchableOpacity>
     </ScrollView>

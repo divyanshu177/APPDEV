@@ -46,11 +46,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       {/* 🔓 Logout Button at Top-Right */}
-      <View style={styles.logoutTopWrapper}>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
-      </View>
+  
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity onPress={update}>
         <Text style={styles.updateLink}>🔄 Update Profile Picture</Text>
@@ -89,6 +85,9 @@ export default function ProfileScreen() {
           <Text style={styles.postsText}>📝 Update Profile</Text>
         </TouchableOpacity>
       </Animatable.View>
+       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
     </ScrollView>
     </SafeAreaView>
   );
@@ -191,7 +190,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   logoutButton: {
-    backgroundColor: '#F44336',
+    backgroundColor: '#a78bfa',
     paddingVertical: 8,
     paddingHorizontal: 15,
     borderRadius: 8,
