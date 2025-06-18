@@ -26,7 +26,7 @@ const {
   createPost, updatePost, removePost, displayPost, getPost, getMyPosts,getPostByUser,uploadImages
 } = require('./controllers/PostController');
 const {
-  searchUser, searchPost, getProfile, getAllUsers, viewUserProfile, uploadProfile
+  searchUser, searchPost, getProfile, getAllUsers, viewUserProfile, uploadProfile,updateName, updatePhone
 } = require('./controllers/UserController');
 const {
   sendMessage, getMessages, markAsRead, getUnreadCounts
@@ -96,7 +96,8 @@ app.post('/login/uploadImages',upload.any(), uploadImages);
 
 
 // Routes — Users
-
+app.post('/login/updateName', isLoggedIn, updateName);
+app.post('/login/updatePhone', isLoggedIn, updatePhone);
 app.get('/login/searchUser', isLoggedIn, searchUser);
 app.get('/login/searchPost', isLoggedIn, searchPost);
 app.get('/login/getProfile', isLoggedIn, getProfile);
@@ -120,6 +121,7 @@ app.post('/login/storeOrders',isLoggedIn,storeOrders);
 app.get('/login/getOrders',isLoggedIn,getOrders);
 
 app.post('/sendWelcome',smsController);
+
 
 
 

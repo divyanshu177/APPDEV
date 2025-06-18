@@ -12,6 +12,7 @@ export default function ProfileScreen() {
 
   const getposts = () => router.push('/(prof)/posts');
   const update = () => router.push('/(prof)/pictureProf');
+  const updateProfile = () => router.push('/(prof)/updateProfile');
 
     const handleLogout = async () => {
     await AsyncStorage.removeItem('userToken');
@@ -81,7 +82,7 @@ export default function ProfileScreen() {
       </Animatable.View>
 
       <Animatable.View animation="fadeInUp" delay={600} duration={600} style={styles.buttonCard}>
-        <TouchableOpacity onPress={update}>
+        <TouchableOpacity onPress={updateProfile}>
           <Text style={styles.postsText}>📝 Update Profile</Text>
         </TouchableOpacity>
       </Animatable.View>
