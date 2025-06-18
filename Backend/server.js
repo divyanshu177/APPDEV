@@ -33,7 +33,7 @@ const {
 } = require('./controllers/chatController');
 
 // App setup
-const { createPaymentLink,storeOrders,paymentSuccess,getOrders} = require('./controllers/payController');
+const { createPaymentLink,storeOrders,paymentSuccess,getOrders,smsController} = require('./controllers/payController');
 
 
 const app = express();
@@ -82,7 +82,7 @@ app.get('/login/getFriends', isLoggedIn, getFriends);
 
 // Routes — Posts
 
-app.post('/login/createPost', isLoggedIn, createPost);
+app.post('/login/createPost',  createPost);
 app.put('/login/updatePost/:postId', isLoggedIn, updatePost);
 app.get('/login/displayPost', isLoggedIn, displayPost);
 app.delete('/login/removePost/:postId', isLoggedIn, removePost);
@@ -119,10 +119,9 @@ app.post('/login/paymentSuccess',isLoggedIn,paymentSuccess);
 app.post('/login/storeOrders',isLoggedIn,storeOrders);
 app.get('/login/getOrders',isLoggedIn,getOrders);
 
+app.post('/sendWelcome',smsController);
 
-//app.post('/login/paymentSuccess',isLoggedIn,paymentSuccess);
-//app.post('/login/storeOrders',isLoggedIn,storeOrders);
-//app.get('/login/getOrders',isLoggedIn,getOrders);
+
 
 const PORT = 3000;
 server.listen(PORT, () => {
