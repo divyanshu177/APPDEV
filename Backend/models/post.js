@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const service = require('./service');
 
+
 const postSchema = new mongoose.Schema({
     serviceId:{
         type: mongoose.Schema.Types.ObjectId,
@@ -29,10 +30,10 @@ const postSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    image: {
-        type: String,
+    images: [{
+        type: [String],
         required: true
-    },
+    }],
     dummyseller: {
        type:Number,
        enum: [0, 1], // 0 for no dummy seller, 1 for dummy seller
@@ -49,7 +50,4 @@ const postSchema = new mongoose.Schema({
 });
 
 
-
-const Post = mongoose.model('Post', postSchema);
-
-module.exports = Post;
+module.exports = mongoose.model('Post', postSchema);

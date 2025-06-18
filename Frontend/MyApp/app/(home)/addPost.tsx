@@ -30,7 +30,7 @@ export default function ServicesScreen() {
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Text style={styles.name}>{item.name}</Text>
-      <Text style={styles.price}>₹{item.originalPrice}</Text>
+      <Text style={styles.price}>₹{item.reducedPrice}</Text>
       <Button title="Add Post" onPress={() => create(item)} color="#4FC3F7" />
     </View>
   );

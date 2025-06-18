@@ -22,11 +22,11 @@ export default function HomeScreen() {
   useEffect(() => {
     const checkAuth = async () => {
       const token = await AsyncStorage.getItem('userToken');
-      if (token) {
-        router.replace('/(home)');
-      } else {
+      // if (token) {
+      //   router.replace('/(home)');
+      // } else {
         router.replace('/(auth)/login');
-      }
+      // }
     }
      const timer = setTimeout(() => {
       checkAuth();

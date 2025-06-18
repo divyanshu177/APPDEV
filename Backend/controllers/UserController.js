@@ -133,6 +133,47 @@ const uploadProfile = async (req, res) => {
   }
 };
 
+const updateName = async (req, res) => {
+  console.log("Updating name for user:", req.user._id);
+  console.log("Request body:", req.body);
+  try {
+    const newName = req.body.name;
+    const userId = req.user._id;
+
+
+    const user = await User.findById(userId);
+    console.log("User found:", user);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.name = newName;
+    await user.save();
+
+    return res.status(200).json({ message: "Name updated successfully", user });
+  } catch (error) {
+    console.error("Error updating name:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const updatePhone = async (req, res) => {
+  console.log("Updating phone number for user:", req.user._id);
+  try {
+    const newPhone = req.body.phone;
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+    console.log("User found:", user);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.phone = newPhone;
+    await user.save();
+
+    return res.status(200).json({ message: "Phone number updated successfully", user });
+  } catch (error) {
+    console.error("Error updating phone:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
 
 
 
@@ -142,5 +183,7 @@ module.exports = {
     getProfile,
     getAllUsers,
     viewUserProfile,
-    uploadProfile
+    uploadProfile,
+    updateName,
+    updatePhone
 };

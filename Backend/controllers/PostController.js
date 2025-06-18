@@ -1,15 +1,23 @@
 const User = require('../models/User');
 const Post = require('../models/post');
 const Service = require('../models/service');
+
 const createPost = async (req, res) => {
+
     try {
-        const {sellerId, serviceId, desc,image ,dummySellerId,serviceName,review} = req.body;
+        const {sellerId, serviceId, desc, images, dummySellerId, review} = req.body;
+        console.log("Request body:", req.body);
+
         console.log("creating post");
+       
         const service = await Service.findById(serviceId);
+       
  
         if (!service) {
             return res.status(404).json({ message: "Service not found" });
         }
+
+         const serviceName= service.name;
        
         let dummySeller=0;
 
@@ -20,7 +28,6 @@ const createPost = async (req, res) => {
         let costo =0;
         
 
-        console.log("Dummy Sellerid:", dummySellerId);
 
         if (!service) {
             return res.status(404).json({ message: "Service not found" });
@@ -39,7 +46,7 @@ const createPost = async (req, res) => {
           sellerId: sellerId,
           desc: desc,
           cost: costo,
-          image: image,
+          images:images,
           serviceName: serviceName,
           dummyseller: dummySeller,
           dummysellerId: dummySellerId,
@@ -73,7 +80,7 @@ const updatePost = async (req, res) =>{
         }
 
         post.desc = desc || post.desc;
-        post.image = image || post.image;
+        post.image = image || post.images;
 
         await post.save();
 
@@ -132,6 +139,7 @@ const removePost = async (req, res) => {
             return res.status(500).json({ message: "Internal server error" });
         }
     };
+    
 const displayPost = async (req, res) => {
     try {
         const posts = await Post.find()
@@ -148,6 +156,7 @@ const displayPost = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+
 const getPostByUser = async (req, res) => {
   try {
     const { userId } = req.body; // ✅ You’re sending it in body
@@ -168,7 +177,22 @@ const getPostByUser = async (req, res) => {
   }
 };
 
+const uploadImages = (req, res) => {
+    console.log(req.formDataUpload)
+    console.log("images", req.files);
+  try {
+    console.log("uploading imagesss")
+    const imageUrls = req.files.map(file => {
+      return `http://10.61.89.72:3000/uploads/${file.filename}`;
+    });
 
+    console.log("Image URLs:", imageUrls);
+    res.status(200).json({ success: true, imageUrls });
+  } catch (error) {
+    console.error('Error uploading images:', error);
+    res.status(500).json({ success: false, message: 'Image upload failed.' });
+  }
+};
 
 module.exports = {
     createPost,
@@ -177,6 +201,6 @@ module.exports = {
     getPost,
     getMyPosts,
     displayPost,
-    getPostByUser
-
+    getPostByUser,
+    uploadImages 
 };
