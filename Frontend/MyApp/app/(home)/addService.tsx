@@ -68,8 +68,8 @@ export default function AddServiceScreen() {
       result.assets.forEach((asset, index) => {
         formDataUpload.append('images', {
           uri: asset.uri,
-          name: `img-${index}.jpg`,
-          type: 'image/jpeg',
+         name: `img-${index}.jpg`,
+          type: `image/jpeg`,
         } as any);
       });
 
