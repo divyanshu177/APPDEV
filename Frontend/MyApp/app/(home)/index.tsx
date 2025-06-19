@@ -6,6 +6,7 @@ import {
 import axiosInstance from '../axiosInstance';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+const BASE_URL = 'http://10.61.90.94:3000';
 
 type Post = {
   _id: string;
@@ -28,9 +29,14 @@ const ImageSlider: React.FC<ImageSliderProps> = ({ images }) => (
     horizontal
     showsHorizontalScrollIndicator={false}
     keyExtractor={(_, index) => index.toString()}
-    renderItem={({ item }) => (
-      <Image source={{ uri: item }} style={styles.postImage} />
-    )}
+    renderItem={({ item }) =>
+      typeof item === 'string' ? (
+        <Image
+          source={{ uri: item.startsWith('http') ? item : `${BASE_URL}/${item}` }}
+          style={styles.postImage}
+        />
+      ) : null
+    }
   />
 );
 
@@ -76,7 +82,7 @@ const HomePage = () => {
 
   const renderPost = ({ item }: { item: Post }) => {
     const isDummy = Boolean(item.dummysellerId);
-    const images = isDummy ? item.images[0] : item.image; 
+    const images = item.images[0]; 
 
     return (
       <View style={[styles.card, isDummy && styles.dummyCard]}>
