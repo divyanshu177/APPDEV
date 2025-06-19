@@ -100,12 +100,13 @@ const viewUserProfile = async (req, res) => {
 
 
 const uploadProfile = async (req, res) => {
-  console.log(req)
+  console.log(req.params.id)
+
   try {
     console.log('Upload request received.');
-    console.log(req);
-    console.log('File:', req.file);
-    console.log('User ID:', req.params.id);
+    
+    
+  
 
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });

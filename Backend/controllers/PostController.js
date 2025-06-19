@@ -183,7 +183,8 @@ const uploadImages = (req, res) => {
   try {
     console.log("uploading imagesss")
     const imageUrls = req.files.map(file => {
-      return `http://10.61.89.72:3000/uploads/${file.filename}`;
+      return `http://10.61.90.94:3000/uploads/${file.filename}`;
+
     });
 
     console.log("Image URLs:", imageUrls);

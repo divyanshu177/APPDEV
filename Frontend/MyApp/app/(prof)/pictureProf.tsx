@@ -8,27 +8,41 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 export default function ProfileScreen() {
   const [imageUri, setImageUri] = useState<string | null>(null);
 
-  const uploadImage = async (image: { uri: string }) => {
-    const userId = await AsyncStorage.getItem('userId');
+ const uploadImage = async (image: { uri: string }) => {
+  try {
+    const userString = await AsyncStorage.getItem('user');
+    const user = userString ? JSON.parse(userString) : null;
+    console.log(user)
+    
+    const userId = user?.id;
+    if (!userId) return alert('User not found');
+    console.log(userId)
+
     const formData = new FormData();
     formData.append('profilePicture', {
       uri: image.uri,
       name: `profile-${Date.now()}.jpg`,
       type: 'image/jpeg',
     } as any);
+    formData.append('userId', userId); 
 
-    try {
-      await axiosInstance.post(
-        `/login/updateProfilePicture/${userId}`,
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
-      );
-      alert('Uploaded successfully!');
-    } catch (err) {
-      console.error('Upload failed:', err);
-      alert('Upload failed');
-    }
-  };
+    const res = await axiosInstance.post(
+      `/login/updateProfilePicture/${userId}`,
+     
+      formData,
+      
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+
+    console.log("Upload response:", res.data);
+
+    setImageUri(res.data.profilePicture); // <-- use returned image URL
+    alert('Uploaded successfully!');
+  } catch (err) {
+    console.error('Upload failed:', err.response?.data || err.message);
+    alert('Upload failed');
+  }
+};
 
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
