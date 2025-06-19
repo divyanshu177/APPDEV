@@ -76,7 +76,7 @@ const HomePage = () => {
 
   const renderPost = ({ item }: { item: Post }) => {
     const isDummy = Boolean(item.dummysellerId);
-    const images = isDummy ? item.images[0] : item.image; 
+    const images =  item.images[0] ; 
 
     return (
       <View style={[styles.card, isDummy && styles.dummyCard]}>

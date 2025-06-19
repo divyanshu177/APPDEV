@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "d2291b77-f926-4b9b-a484-c014032171b1"
+      }
+    },
+    "android": {
+      "package": "com.divyansh.myapp"
+    }
+  }
+}
