@@ -31,7 +31,7 @@ const createPaymentLink = async (req, res) => {
       sms: true,
       email: true,
     },
-    callback_url: 'http://10.61.90.94.135:3000/payment-success', // Change to your own URL
+    callback_url: 'https://appdev-production-bb12.up.railway.app/payment-success', // Change to your own URL
     callback_method: 'get',
     
   };

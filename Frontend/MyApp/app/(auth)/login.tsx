@@ -20,7 +20,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    axios.post('http://10.61.90.94:3000/login', { email, password })
+    axios.post('https://appdev-production-bb12.up.railway.app/login', { email, password })
       .then(async (response) => {
         const { token, user } = response.data;
         if (token && user) {

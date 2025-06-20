@@ -6,7 +6,7 @@ import {
 import axiosInstance from '../axiosInstance';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-const BASE_URL = 'http://10.61.90.94:3000';
+const BASE_URL = 'https://appdev-production-bb12.up.railway.app';
 
 type Post = {
   _id: string;

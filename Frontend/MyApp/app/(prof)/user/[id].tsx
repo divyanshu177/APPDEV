@@ -54,7 +54,7 @@ export default function OtherUserProfile() {
         source={{
           uri: profile.profilePicture?.startsWith('http')
             ? profile.profilePicture
-            : `http://10.61.90.94:3000/uploads/${profile.profilePicture}`,
+            : `https://appdev-production-bb12.up.railway.app/uploads/${profile.profilePicture}`,
         }}
         style={styles.profileImage}
       />
@@ -107,7 +107,7 @@ export default function OtherUserProfile() {
             <View key={post._id} style={styles.postCard}>
               {post.image && (
                 <Image
-                  source={{ uri: `http://10.61.90.94:3000/uploads/${post.image}` }}
+                  source={{ uri: `https://appdev-production-bb12.up.railway.app/uploads/${post.image}` }}
                   style={styles.postImage}
                 />
               )}

@@ -183,7 +183,7 @@ const uploadImages = (req, res) => {
   try {
     console.log("uploading imagesss")
     const imageUrls = req.files.map(file => {
-      return `http://10.61.90.94:3000/uploads/${file.filename}`;
+      return `https://appdev-production-bb12.up.railway.app/uploads/${file.filename}`;
 
     });
 

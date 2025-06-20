@@ -44,7 +44,7 @@ export default function ChatScreen() {
   };
   
   useEffect(() => {
-  socket.current = io('http://10.61.90.94.135:3000'); // replace with your actual server URL
+  socket.current = io('https://appdev-production-bb12.up.railway.app'); // replace with your actual server URL
   socket.current.emit('joinRoom', { userId: friendId }); // join room or user-specific event
 
   socket.current.on('newMessage', (message: Message) => {
